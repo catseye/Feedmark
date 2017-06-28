@@ -1,0 +1,2 @@
+atomize==0.2.0
+Markdown==2.6.8
