@@ -9,19 +9,20 @@ import markdown
 from feedmark.parser import Parser
 
 
-def feedmark(in_filename, out_filename):
-    with codecs.open(in_filename, 'r', encoding='utf-8') as f:
-        in_doc = f.read()
+def extract_entries(markdown_text, properties):
+    """`properties` should be a dict-like object; it will be populated by the properties
+    of the set of entries found in the document."""
 
-    parser = Parser(in_doc)
+    parser = Parser(markdown_text)
     document = parser.parse_document()
 
-    author = document.properties['author']
-    url = document.properties['url']
+    properties['title'] = document.title
+    properties['author'] = document.properties['author']
+    properties['url'] = document.properties['url']
 
     entries = []
     for section in document.sections:
-        guid = url + "/" + section.title
+        guid = properties['url'] + "/" + section.title
         updated = section.publication_date
 
         summary = atomize.Summary(markdown.markdown(section.body), content_type='html')
@@ -33,24 +34,33 @@ def feedmark(in_filename, out_filename):
                               summary=summary, links=links)
         entries.append(entry)
 
-    limit = None
+    return entries
+
+
+def feedmark_atomize(in_filenames, out_filename, limit=None):
+    entries = []
+    properties = {}
+    for in_filename in in_filenames:
+        with codecs.open(in_filename, 'r', encoding='utf-8') as f:
+            markdown_text = f.read()
+        these_properties = {}
+        these_entries = extract_entries(markdown_text, these_properties)
+        properties.update(these_properties)  # TODO: something more elegant than this
+        entries.extend(these_entries)
+
     if limit and len(entries) > limit:
         entries = entries[:limit]
 
-    kwargs = dict(
-        title=document.title,
+    assert properties['author'], "Need author"
+
+    feed = atomize.Feed(
+        author=properties['author'],
+        title=properties['title'],
         updated=datetime.utcnow(),
-        guid=url,
+        guid=properties['url'],
+        self_link=properties['url'],
         entries=entries
     )
-
-    if author is not None:
-        kwargs['author'] = author
-
-    if url is not None:
-        kwargs['self_link'] = url
-
-    feed = atomize.Feed(**kwargs)
 
     feed.write_file(out_filename)
 
@@ -58,14 +68,14 @@ def feedmark(in_filename, out_filename):
 def main(args):
     argparser = ArgumentParser()
 
-    argparser.add_argument('infile', metavar='FILENAME', type=str,
-        help='A Markdown file containing the feed.'
+    argparser.add_argument('infiles', nargs='+', metavar='FILENAME', type=str,
+        help='Markdown files containing the embedded entries'
     )
     argparser.add_argument('outfile', metavar='FILENAME', type=str)
 
     options = argparser.parse_args(sys.argv[1:])
 
-    return feedmark(options.infile, options.outfile)
+    return feedmark_atomize(options.infiles, options.outfile)
 
 
 if __name__ == '__main__':
