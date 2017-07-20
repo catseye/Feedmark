@@ -9,6 +9,7 @@ def extract_feed_properties(document):
     properties['title'] = document.title
     properties['author'] = document.properties['author']
     properties['url'] = document.properties['url']
+    properties['link-to-anchors-on'] = document.properties.get('link-to-anchors-on')
     return properties
 
 
@@ -20,11 +21,12 @@ def convert_section_to_entry(section, properties, markdown_links_base=None):
     summary = atomize.Summary(markdown.markdown(section.body), content_type='html')
 
     links = []
-    if markdown_links_base is not None:
+    if 'link-to-anchors-on' in section.document.properties:
+        link_to_anchors_on = section.document.properties['link-to-anchors-on']
         section_anchor = section.title.replace("'", '').replace(":", '').replace(' ', '-').lower()
         links.append(
             atomize.Link(
-                '{}#{}'.format(markdown_links_base, section_anchor),
+                '{}#{}'.format(link_to_anchors_on, section_anchor),
                 content_type='text/html',
                 rel='alternate'
             )
@@ -37,7 +39,9 @@ def convert_section_to_entry(section, properties, markdown_links_base=None):
 def extract_sections(documents):
     sections = []
     for document in documents:
-        sections.extend(document.sections)
+        for section in document.sections:
+            section.document = document  # TODO: maybe the parser should do this for us
+            sections.append(section)
     sections.sort(key=lambda section: section.publication_date, reverse=True)
     return sections
 
@@ -51,8 +55,7 @@ def feedmark_atomize(documents, out_filename, limit=None):
 
     entries = []
     for section in extract_sections(documents):
-        # FIXME don't hardcode this links base thing
-        entries.append(convert_section_to_entry(section, properties, markdown_links_base='https://github.com/catseye/Feedmark/blob/master/eg/Recent%20Llama%20Sightings.md'))
+        entries.append(convert_section_to_entry(section, properties))
 
     if limit and len(entries) > limit:
         entries = entries[:limit]
