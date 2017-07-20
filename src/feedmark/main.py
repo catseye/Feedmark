@@ -65,6 +65,9 @@ def main(args):
     argparser.add_argument('input_files', nargs='+', metavar='FILENAME', type=str,
         help='Markdown files containing the embedded entries'
     )
+    argparser.add_argument('--by-property', action='store_true',
+        help='Display a list of all properties found and list the entries they were found on'
+    )
     argparser.add_argument('--dump-entries', action='store_true',
         help='Display a summary of the entries on standard output'
     )
@@ -94,6 +97,17 @@ def main(args):
                     write(u'    !{}: {}'.format(name, url))
                 for key, value in section.properties.iteritems():
                     write(u'    {}: {}'.format(key, value))
+
+    if options.by_property:
+        by_property = {}
+        for document in documents:
+            for section in document.sections:
+                for key, value in section.properties.iteritems():
+                    by_property.setdefault(key, set()).add(section.title)
+        for property_name, entry_set in sorted(by_property.iteritems()):
+            write(property_name)
+            for entry_name in sorted(entry_set):
+                write(u'    {}'.format(entry_name))
 
     if options.output_atom:
         feedmark_atomize(documents, options.output_atom)
