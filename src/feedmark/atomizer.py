@@ -4,7 +4,7 @@ import atomize
 import markdown
 
 
-def extract_feed_entries(document):
+def extract_feed_entries(document, markdown_links_base=None):
     properties = {}
 
     properties['title'] = document.title
@@ -18,9 +18,17 @@ def extract_feed_entries(document):
 
         summary = atomize.Summary(markdown.markdown(section.body), content_type='html')
 
-        #links = [atomize.Link(section.link, content_type='text/html',
-        #                      rel='alternate')]
         links = []
+        if markdown_links_base is not None:
+            section_anchor = section.title.replace("'", '').replace(":", '').replace(' ', '-').lower()
+            links.append(
+                atomize.Link(
+                    '{}#{}'.format(markdown_links_base, section_anchor),
+                    content_type='text/html',
+                    rel='alternate'
+                )
+            )
+
         entry = atomize.Entry(title=section.title, guid=guid, updated=updated,
                               summary=summary, links=links)
         entries.append(entry)
@@ -33,7 +41,8 @@ def feedmark_atomize(documents, out_filename, limit=None):
     properties = {}
 
     for document in documents:
-        these_entries, these_properties = extract_feed_entries(document)
+        # FIXME don't hardcode this links base thing
+        these_entries, these_properties = extract_feed_entries(document, markdown_links_base='https://github.com/catseye/Feedmark/blob/master/eg/Recent%20Llama%20Sightings.md')
         properties.update(these_properties)  # TODO: something more elegant than this
         entries.extend(these_entries)
 
