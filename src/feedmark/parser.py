@@ -66,6 +66,9 @@ class Parser(object):
     def is_blank_line(self):
         return re.match(r'^\s*$', self.line)
 
+    def is_image_line(self):
+        return re.match(r'^\!\[.*?\]\(.*?\)\s*$', self.line)
+
     def is_property_line(self):
         return re.match(r'^\*\s+(.*?)\s*\:\s*(.*?)\s*$', self.line)
 
@@ -74,7 +77,7 @@ class Parser(object):
 
     def parse_document(self):
         # Feed       ::= :Title Properties Body {Section}.
-        # Section    ::= {:Blank} :Heading Properties Body.
+        # Section    ::= {:Blank} :Heading {Image} Properties Body.
         # Properties ::= {:Blank | :Property}.
         # Body       ::= {:NonHeadingLine}.
 
@@ -133,10 +136,19 @@ class Parser(object):
 
         section = Section(match.group(1))
         self.scan()
+        section.images = self.parse_images()
         section.properties = self.parse_properties()
         section.lines = self.parse_body()
-
         return section
+
+    def parse_images(self):
+        images = []
+        while self.is_blank_line() or self.is_image_line():
+            if self.is_image_line():
+                match = re.match(r'^\!\[(.*?)\]\((.*?)\)\s*$', self.line)
+                images.append( (match.group(1), match.group(2),) )
+            self.scan()
+        return images
 
     def parse_body(self):
         lines = []

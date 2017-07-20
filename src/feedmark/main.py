@@ -83,12 +83,17 @@ def main(args):
         document = parser.parse_document()
         documents.append(document)
 
+    def write(s):
+        print(s.encode('utf-8'))
+
     if options.dump_entries:
         for document in documents:
             for section in document.sections:
-                print(section.title)
+                write(section.title)
+                for (name, url) in section.images:
+                    write(u'    !{}: {}'.format(name, url))
                 for key, value in section.properties.iteritems():
-                    print('    {}: {}'.format(key, value))
+                    write(u'    {}: {}'.format(key, value))
 
     if options.output_atom:
         feedmark_atomize(documents, options.output_atom)
