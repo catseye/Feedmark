@@ -65,6 +65,9 @@ def main(args):
     argparser.add_argument('input_files', nargs='+', metavar='FILENAME', type=str,
         help='Markdown files containing the embedded entries'
     )
+    argparser.add_argument('--dump-entries', action='store_true',
+        help='Display a summary of the entries on standard output'
+    )
     argparser.add_argument('--output-atom', metavar='FILENAME', type=str,
         help='Construct an Atom XML feed from the entries and write it out to this file'
     )
@@ -79,6 +82,11 @@ def main(args):
         parser = Parser(markdown_text)
         document = parser.parse_document()
         documents.append(document)
+
+    if options.dump_entries:
+        for document in documents:
+            for section in document.sections:
+                print(section.title)
 
     if options.output_atom:
         feedmark_atomize(documents, options.output_atom)
