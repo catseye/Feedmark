@@ -73,7 +73,7 @@ class Parser(object):
         return re.match(r'^\#.*?$', self.line)
 
     def parse_document(self):
-        # Feed       ::= :Title Properties {Section}.
+        # Feed       ::= :Title Properties Body {Section}.
         # Section    ::= {:Blank} :Heading Properties Body.
         # Properties ::= {:Blank | :Property}.
         # Body       ::= {:NonHeadingLine}.
@@ -81,6 +81,7 @@ class Parser(object):
         title = self.parse_title()
         document = Document(title)
         document.properties = self.parse_properties()
+        document.preamble = self.parse_body()
         while not self.eof():
             section = self.parse_section()
             document.sections.append(section)
@@ -88,11 +89,19 @@ class Parser(object):
 
     def parse_title(self):
         match = re.match(r'^\#\s*([^#].*?)\s*$', self.line)
-        if not match:
-            raise ValueError('Expected title')
-        title = match.group(1)
-        self.scan()
-        return title
+        if match:
+            title = match.group(1)
+            self.scan()
+            return title
+        match = re.match(r'^\s*(.*?)\s*$', self.line)
+        if match:
+            title = match.group(1)
+            self.scan()
+            match = re.match(r'^\s*(\=+)\s*$', self.line)
+            if match:
+                self.scan()
+                return title
+        raise ValueError('Expected title')
 
     def parse_property(self):
         match = re.match(r'^\*\s+(.*?)\s*\:\s*(.*?)\s*$', self.line)

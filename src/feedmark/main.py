@@ -87,6 +87,8 @@ def main(args):
         for document in documents:
             for section in document.sections:
                 print(section.title)
+                for key, value in section.properties.iteritems():
+                    print('    {}: {}'.format(key, value))
 
     if options.output_atom:
         feedmark_atomize(documents, options.output_atom)
