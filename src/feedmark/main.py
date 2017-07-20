@@ -71,11 +71,14 @@ def main(args):
     argparser.add_argument('infiles', nargs='+', metavar='FILENAME', type=str,
         help='Markdown files containing the embedded entries'
     )
-    argparser.add_argument('outfile', metavar='FILENAME', type=str)
+    argparser.add_argument('--output-atom', metavar='FILENAME', type=str,
+        help='Construct an Atom XML feed from the entries and write it out to this file'
+    )
 
     options = argparser.parse_args(sys.argv[1:])
 
-    return feedmark_atomize(options.infiles, options.outfile)
+    if options.output_atom:
+        feedmark_atomize(options.infiles, options.output_atom)
 
 
 if __name__ == '__main__':

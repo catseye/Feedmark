@@ -9,7 +9,7 @@ machine-extractable.  Feedmark is a subset of Markdown.
 
 To this end, it is not dissimilar to [Falderal][], however it has
 different goals.  It is more oriented for "curational" tasks.
-[The Dossier] is (nominally) written in Feedmark format.
+[The Dossier][] is (nominally) written in Feedmark format.
 
 Informally, the format says that every `h3`-level heading in the
 Markdown file gives the title of an entity, and may be followed
@@ -28,6 +28,6 @@ Example Feedmark documents can be found in the `eg/` directory.
 Example Usage
 -------------
 
-    bin/feedmark "eg/Recent Llama Sightings.md" feed.xml
+    bin/feedmark "eg/Recent Llama Sightings.md" --output-atom=feed.xml
     python -m SimpleHTTPServer 7000 &
     python -m webbrowser http://localhost:7000/feed.xml
