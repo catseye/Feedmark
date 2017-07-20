@@ -96,13 +96,20 @@ def main(args):
                 for (name, url) in section.images:
                     write(u'    !{}: {}'.format(name, url))
                 for key, value in section.properties.iteritems():
-                    write(u'    {}: {}'.format(key, value))
+                    if isinstance(value, list):
+                        write(u'    {}@'.format(key))
+                        for subitem in value:
+                            write(u'        {}'.format(subitem))
+                    else:
+                        write(u'    {}: {}'.format(key, value))
 
     if options.by_property:
         by_property = {}
         for document in documents:
             for section in document.sections:
                 for key, value in section.properties.iteritems():
+                    if isinstance(value, list):
+                        key = u'{}@'.format(key)
                     by_property.setdefault(key, set()).add(section.title)
         for property_name, entry_set in sorted(by_property.iteritems()):
             write(property_name)

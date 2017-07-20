@@ -70,7 +70,7 @@ class Parser(object):
         return re.match(r'^\!\[.*?\]\(.*?\)\s*$', self.line)
 
     def is_property_line(self):
-        return re.match(r'^\*\s+(.*?)\s*\:\s*(.*?)\s*$', self.line)
+        return re.match(r'^\*\s+(.*?)\s*(\:|\@)\s*(.*?)\s*$', self.line)
 
     def is_heading_line(self):
         return re.match(r'^\#.*?$', self.line)
@@ -107,21 +107,31 @@ class Parser(object):
         raise ValueError('Expected title')
 
     def parse_property(self):
+        match = re.match(r'^\*\s+(.*?)\s*\@\s*(.*?)\s*$', self.line)
+        if match:
+            (key, val) = (match.group(1), match.group(2))
+            self.scan()
+            return ('@', key, val)
         match = re.match(r'^\*\s+(.*?)\s*\:\s*(.*?)\s*$', self.line)
-        if not match:
-            raise ValueError('Expected property')
-        (key, val) = (match.group(1), match.group(2))
-        self.scan()
-        return (key, val)
+        if match:
+            (key, val) = (match.group(1), match.group(2))
+            self.scan()
+            return (':', key, val)
+        raise ValueError('Expected property')
 
     def parse_properties(self):
         properties = {}
         while self.is_blank_line() or self.is_property_line():
             if self.is_property_line():
-                key, val = self.parse_property()
-                if key in properties:
-                    raise KeyError('{} already given'.format(key))
-                properties[key] = val
+                kind, key, val = self.parse_property()
+                if kind == ':':
+                    if key in properties:
+                        raise KeyError('{} already given'.format(key))
+                    properties[key] = val
+                elif kind == '@':
+                    properties.setdefault(key, []).append(val)
+                else:
+                    raise NotImplementedError(kind)
             else:
                 self.scan()
         return properties
