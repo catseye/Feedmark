@@ -18,7 +18,13 @@ where every item is prefixed by an identifier and a colon.
 
 This repository contains a Python program, `feedmark`, which is an
 implementation of an extractor for the Feedmark format.  It is
-currently able to convert a Feedmark document to an Atom feed.
+currently able to:
+
+*   parse a set of Feedmark documents and extract entries from them
+*   dump a summary of the parsed entries and their properties
+*   dump an inverted index of each property found, and its entries
+*   write out an Atom feed XML file containing the parsed entries
+*   parse all of the "Items of Note" lists in The Dossier
 
 Example Feedmark documents can be found in the `eg/` directory.
 
@@ -31,3 +37,12 @@ Example Usage
     bin/feedmark "eg/Recent Llama Sightings.md" --output-atom=feed.xml
     python -m SimpleHTTPServer 7000 &
     python -m webbrowser http://localhost:7000/feed.xml
+
+Motivation
+----------
+
+Why is this desirable?  Because if your structured data format is
+a subset of Markdown, the effort to format it into something
+nicely human-readable is very small.  YAML and Markdown are both
+fairly easy to read as raw text, but Github, for example,
+automatically formats Markdown as HTML, making it that much nicer.
