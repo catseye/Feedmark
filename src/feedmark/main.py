@@ -21,6 +21,9 @@ def main(args):
     argparser.add_argument('--output-atom', metavar='FILENAME', type=str,
         help='Construct an Atom XML feed from the entries and write it out to this file'
     )
+    argparser.add_argument('--limit', metavar='COUNT', type=int, default=None,
+        help='Process no more than this many entries when making an Atom feed'
+    )
 
     options = argparser.parse_args(sys.argv[1:])
 
@@ -64,7 +67,7 @@ def main(args):
                 write(u'    {}'.format(entry_name))
 
     if options.output_atom:
-        feedmark_atomize(documents, options.output_atom)
+        feedmark_atomize(documents, options.output_atom, limit=options.limit)
 
 
 if __name__ == '__main__':
