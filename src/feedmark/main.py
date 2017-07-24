@@ -3,6 +3,7 @@ import codecs
 import sys
 
 from feedmark.atomizer import feedmark_atomize
+from feedmark.htmlizer import feedmark_htmlize
 from feedmark.feeds import extract_sections
 from feedmark.parser import Parser
 
@@ -71,13 +72,8 @@ def main(args):
                 write(u'    {}'.format(entry_name))
 
     if options.output_html_snippet:
-        sections = extract_sections(documents)
-        write(u'<ul>')
-        for (n, section) in enumerate(sections):
-            if options.limit is not None and n >= options.limit:
-                break
-            write(u'<li>{}</li>'.format(section.title))
-        write(u'</ul>')
+        s = feedmark_htmlize(documents, limit=options.limit)
+        write(s)
 
     if options.output_atom:
         feedmark_atomize(documents, options.output_atom, limit=options.limit)
