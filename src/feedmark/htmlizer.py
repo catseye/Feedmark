@@ -1,18 +1,29 @@
 from datetime import datetime
+import re
 
 import markdown
 
-from feedmark.feeds import extract_sections
+from feedmark.feeds import extract_sections, construct_entry_url
+
+
+def strip_outer_p(text):
+    match = re.match(r'^\s*\<p\>\s*(.*?)\s*\<\/p\>\s*$', text, re.DOTALL)
+    if match:
+        return match.group(1)
+    return text
 
 
 def render_section(section):
     date = section.publication_date.strftime('%b %-d, %Y')
     if 'summary' in section.properties:
-        summary = markdown.markdown(section.properties['summary'])
+        summary = strip_outer_p(markdown.markdown(section.properties['summary']))
     else:
-        # TODO: link
         summary = section.title
-    return '{}: {}'.format(date, summary)
+    url = construct_entry_url(section)
+    read_more = ''
+    if url is not None:
+        read_more = '<a href="{}">Read more...</a>'.format(url)
+    return '{}: {} {}'.format(date, summary, read_more)
 
 
 def feedmark_htmlize(documents, limit=None):
