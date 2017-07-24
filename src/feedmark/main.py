@@ -3,6 +3,7 @@ import codecs
 import sys
 
 from feedmark.atomizer import feedmark_atomize
+from feedmark.feeds import extract_sections
 from feedmark.parser import Parser
 
 
@@ -21,8 +22,11 @@ def main(args):
     argparser.add_argument('--output-atom', metavar='FILENAME', type=str,
         help='Construct an Atom XML feed from the entries and write it out to this file'
     )
+    argparser.add_argument('--output-html-snippet', action='store_true',
+        help='Construct a snippet of HTML from the entries and write it to stdout'
+    )
     argparser.add_argument('--limit', metavar='COUNT', type=int, default=None,
-        help='Process no more than this many entries when making an Atom feed'
+        help='Process no more than this many entries when making an Atom or HTML feed'
     )
 
     options = argparser.parse_args(sys.argv[1:])
@@ -65,6 +69,15 @@ def main(args):
             write(property_name)
             for entry_name in sorted(entry_set):
                 write(u'    {}'.format(entry_name))
+
+    if options.output_html_snippet:
+        sections = extract_sections(documents)
+        write(u'<ul>')
+        for (n, section) in enumerate(sections):
+            if options.limit is not None and n >= options.limit:
+                break
+            write(u'<li>{}</li>'.format(section.title))
+        write(u'</ul>')
 
     if options.output_atom:
         feedmark_atomize(documents, options.output_atom, limit=options.limit)

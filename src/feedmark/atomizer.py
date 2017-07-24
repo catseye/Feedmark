@@ -3,14 +3,7 @@ from datetime import datetime
 import atomize
 import markdown
 
-
-def extract_feed_properties(document):
-    properties = {}
-    properties['title'] = document.title
-    properties['author'] = document.properties['author']
-    properties['url'] = document.properties['url']
-    properties['link-to-anchors-on'] = document.properties.get('link-to-anchors-on')
-    return properties
+from feedmark.feeds import extract_feed_properties, extract_sections
 
 
 def convert_section_to_entry(section, properties, markdown_links_base=None):
@@ -34,16 +27,6 @@ def convert_section_to_entry(section, properties, markdown_links_base=None):
 
     return atomize.Entry(title=section.title, guid=guid, updated=updated,
                          summary=summary, links=links)
-
-
-def extract_sections(documents):
-    sections = []
-    for document in documents:
-        for section in document.sections:
-            section.document = document  # TODO: maybe the parser should do this for us
-            sections.append(section)
-    sections.sort(key=lambda section: section.publication_date, reverse=True)
-    return sections
 
 
 def feedmark_atomize(documents, out_filename, limit=None):
