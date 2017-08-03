@@ -1,7 +1,7 @@
 Feedmark
 ========
 
-*Version 0.0, very much work-in-progress and subject to change*
+*Version 0.1.  Subject to change in backwards-incompatible ways without notice.*
 
 Feedmark is a format for embedding entities in Markdown files with
 accompanying metadata in a way which is both human-readable and
@@ -23,7 +23,7 @@ currently able to:
 *   parse a set of Feedmark documents and extract entries from them
 *   dump a summary of the parsed entries and their properties
 *   dump an inverted index of each property found, and its entries
-*   write out an Atom feed XML file containing the parsed entries
+*   write out an Atom (née RSS) feed containing the parsed entries
 *   parse all of the "Items of Note" lists in The Dossier
 
 Example Feedmark documents can be found in the `eg/` directory.
