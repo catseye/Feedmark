@@ -22,29 +22,32 @@ def extract_links(html_text):
     return links
 
 
-def check_links(documents):
+def extract_links_from_documents(documents):
     links = []
     for document in documents:
         for section in document.sections:
             for (name, url) in section.images:
-                links.append(url)
+                links.append((url, section))
             for key, value in section.properties.iteritems():
                 if isinstance(value, list):
                     for subitem in value:
-                        links.extend(extract_links(markdown.markdown(subitem)))
+                        links.extend([(url, section) for url in extract_links(markdown.markdown(subitem))])
                 else:
-                    links.extend(extract_links(markdown.markdown(value)))
-            links.extend(extract_links(markdown.markdown(section.body)))
+                    links.extend([(url, section) for url in extract_links(markdown.markdown(value))])
+            links.extend([(url, section) for url in extract_links(markdown.markdown(section.body))])
+    return links
 
-    # TODO: dedup these.  associate each with a section, dump that section.
+
+def check_links(documents):
+    links = extract_links_from_documents(documents)
 
     failures = []
-    for link in tqdm(links, total=len(links)):
+    for url, section in tqdm(links, total=len(links)):
         try:
-            r = requests.head(link)
+            r = requests.head(url)
             status = r.status_code
         except Exception as e:
             status = str(e)
         if status != 200:
-            failures.append((status, link))
+            failures.append((status, url, section))
     return failures
