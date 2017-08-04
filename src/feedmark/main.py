@@ -3,7 +3,6 @@ import codecs
 import sys
 
 from feedmark.atomizer import feedmark_atomize
-from feedmark.checkers import check_links
 from feedmark.htmlizer import feedmark_htmlize
 from feedmark.feeds import extract_sections
 from feedmark.parser import Parser
@@ -23,6 +22,9 @@ def main(args):
     )
     argparser.add_argument('--check-links', action='store_true',
         help='Check for broken web links in the entries and report them'
+    )
+    argparser.add_argument('--archive-links', action='store_true',
+        help='Download a copy of all web objects linked to from the entries'
     )
     argparser.add_argument('--output-atom', metavar='FILENAME', type=str,
         help='Construct an Atom XML feed from the entries and write it out to this file'
@@ -49,7 +51,13 @@ def main(args):
         print(s.encode('utf-8'))
 
     if options.check_links:
+        from feedmark.checkers import check_links
         for failure in check_links(documents):
+            write(repr(failure))
+
+    if options.archive_links:
+        from feedmark.checkers import archive_links
+        for failure in archive_links(documents):
             write(repr(failure))
 
     if options.dump_entries:

@@ -1,3 +1,6 @@
+import os
+import urllib
+
 from bs4 import BeautifulSoup
 import markdown
 import requests
@@ -46,6 +49,49 @@ def check_links(documents):
         try:
             r = requests.head(url)
             status = r.status_code
+        except Exception as e:
+            status = str(e)
+        if status != 200:
+            failures.append((status, url, section))
+    return failures
+
+
+def url_to_dirname_and_filename(url):
+    parts = url.split('/')
+    parts = parts[2:]
+    domain_name = parts[0]
+    domain_name = urllib.quote_plus(domain_name)
+    parts = parts[1:]
+    filename = '/'.join(parts)
+    filename = urllib.quote_plus(filename)
+    return (domain_name, filename)
+
+
+def download(url, filename):
+    response = requests.get(url, stream=True)
+    part_filename = filename + '_part'
+    with open(part_filename, "wb") as f:
+        for data in response.iter_content():
+            f.write(data)
+    os.rename(part_filename, filename)
+
+
+def archive_links(documents):
+    links = extract_links_from_documents(documents)
+
+    failures = []
+    for url, section in tqdm(links, total=len(links)):
+        try:
+            dirname, filename = url_to_dirname_and_filename(url)
+            c = 'downloads'
+            dirname = os.path.join(c, dirname)
+            if not os.path.exists(dirname):
+                os.makedirs(dirname)
+            filename = os.path.join(dirname, filename)
+            download(url, filename)
+            # r = requests.head(url)
+            # status = r.status_code
+            status = 200
         except Exception as e:
             status = str(e)
         if status != 200:
