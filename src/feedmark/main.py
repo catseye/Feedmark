@@ -21,7 +21,7 @@ def main(args):
     argparser.add_argument('--dump-entries', action='store_true',
         help='Display a summary of the entries on standard output'
     )
-    argparser.add_argument('--archive-links', action='store_true',
+    argparser.add_argument('--archive-links-to', metavar='DIRNAME', type=str, default=None,
         help='Download a copy of all web objects linked to from the entries'
     )
     argparser.add_argument('--output-atom', metavar='FILENAME', type=str,
@@ -48,9 +48,9 @@ def main(args):
     def write(s):
         print(s.encode('utf-8'))
 
-    if options.archive_links:
+    if options.archive_links_to is not None:
         from feedmark.checkers import archive_links
-        result = archive_links(documents)
+        result = archive_links(documents, options.archive_links_to)
         write(json.dumps(result, indent=4))
 
     if options.dump_entries:

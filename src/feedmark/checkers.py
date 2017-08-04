@@ -62,15 +62,14 @@ def download(url, filename):
     return response
 
 
-def archive_links(documents):
+def archive_links(documents, dest_dir):
     links = extract_links_from_documents(documents)
 
     failures = []
     for url, section in tqdm(links, total=len(links)):
         try:
             dirname, filename = url_to_dirname_and_filename(url)
-            c = 'downloads'
-            dirname = os.path.join(c, dirname)
+            dirname = os.path.join(dest_dir, dirname)
             if not os.path.exists(dirname):
                 os.makedirs(dirname)
             filename = os.path.join(dirname, filename)
