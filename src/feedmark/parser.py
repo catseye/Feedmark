@@ -11,16 +11,23 @@ class Document(object):
 
         self.sections = []
 
+    def __str__(self):
+        return "document '{}'".format(self.title.encode('utf-8'))
+
 
 class Section(object):
     def __init__(self, title):
+        self.document = None
         self.title = title
         self.properties = {}
 
         self.lines = []
 
     def __str__(self):
-        return "section '{}'".format(self.title.encode('utf-8'))
+        s = "section '{}'".format(self.title.encode('utf-8'))
+        if self.document:
+            s += " of " + str(self.document)
+        return s
 
     def add_line(self, line):
         self.lines.append(line.rstrip())
@@ -87,6 +94,7 @@ class Parser(object):
         document.preamble = self.parse_body()
         while not self.eof():
             section = self.parse_section()
+            section.document = document
             document.sections.append(section)
         return document
 

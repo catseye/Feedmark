@@ -85,6 +85,6 @@ def archive_links(documents, dest_dir):
             failures.append({
                 'status': status,
                 'url': url,
-                'section': section.title
+                'section': str(section)
             })
     return failures

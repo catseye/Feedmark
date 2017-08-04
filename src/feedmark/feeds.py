@@ -28,7 +28,6 @@ def extract_sections(documents):
     sections = []
     for document in documents:
         for section in document.sections:
-            section.document = document  # TODO: maybe the parser should do this for us
             sections.append(section)
     sections.sort(key=lambda section: section.publication_date, reverse=True)
     return sections
