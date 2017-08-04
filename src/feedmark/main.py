@@ -16,7 +16,7 @@ def main(args):
         help='Markdown files containing the embedded entries'
     )
     argparser.add_argument('--by-property', action='store_true',
-        help='Display a list of all properties found and list the entries they were found on'
+        help='Output JSON containing a list of all properties found and the entries they were found on'
     )
     argparser.add_argument('--dump-entries', action='store_true',
         help='Display a summary of the entries on standard output'
@@ -77,11 +77,8 @@ def main(args):
                 for key, value in section.properties.iteritems():
                     if isinstance(value, list):
                         key = u'{}@'.format(key)
-                    by_property.setdefault(key, set()).add(section.title)
-        for property_name, entry_set in sorted(by_property.iteritems()):
-            write(property_name)
-            for entry_name in sorted(entry_set):
-                write(u'    {}'.format(entry_name))
+                    by_property.setdefault(key, {}).setdefault(section.title, value)
+        write(json.dumps(by_property, indent=4))
 
     if options.output_html_snippet:
         s = feedmark_htmlize(documents, limit=options.limit)
