@@ -63,18 +63,21 @@ def download(url, filename):
 
 
 def archive_links(documents, dest_dir):
+    """If dest_dir is None, links will only be checked for existence, not downloaded."""
     links = extract_links_from_documents(documents)
 
     failures = []
     for url, section in tqdm(links, total=len(links)):
         try:
-            dirname, filename = url_to_dirname_and_filename(url)
-            dirname = os.path.join(dest_dir, dirname)
-            if not os.path.exists(dirname):
-                os.makedirs(dirname)
-            filename = os.path.join(dirname, filename)
-            # if check-only then response = requests.head(url) else ...
-            response = download(url, filename)
+            if dest_dir is not None:
+                dirname, filename = url_to_dirname_and_filename(url)
+                dirname = os.path.join(dest_dir, dirname)
+                if not os.path.exists(dirname):
+                    os.makedirs(dirname)
+                filename = os.path.join(dirname, filename)
+                response = download(url, filename)
+            else:
+                response = requests.head(url)
             status = response.status_code
         except Exception as e:
             status = str(e)

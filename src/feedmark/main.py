@@ -24,6 +24,9 @@ def main(args):
     argparser.add_argument('--archive-links-to', metavar='DIRNAME', type=str, default=None,
         help='Download a copy of all web objects linked to from the entries'
     )
+    argparser.add_argument('--check-links', action='store_true',
+        help='Check if web objects linked to from the entries exist'
+    )
     argparser.add_argument('--output-atom', metavar='FILENAME', type=str,
         help='Construct an Atom XML feed from the entries and write it out to this file'
     )
@@ -48,7 +51,7 @@ def main(args):
     def write(s):
         print(s.encode('utf-8'))
 
-    if options.archive_links_to is not None:
+    if options.check_links or options.archive_links_to is not None:
         from feedmark.checkers import archive_links
         result = archive_links(documents, options.archive_links_to)
         write(json.dumps(result, indent=4))
