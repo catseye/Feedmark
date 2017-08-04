@@ -1,5 +1,6 @@
 from argparse import ArgumentParser
 import codecs
+import json
 import sys
 
 from feedmark.atomizer import feedmark_atomize
@@ -19,9 +20,6 @@ def main(args):
     )
     argparser.add_argument('--dump-entries', action='store_true',
         help='Display a summary of the entries on standard output'
-    )
-    argparser.add_argument('--check-links', action='store_true',
-        help='Check for broken web links in the entries and report them'
     )
     argparser.add_argument('--archive-links', action='store_true',
         help='Download a copy of all web objects linked to from the entries'
@@ -50,15 +48,10 @@ def main(args):
     def write(s):
         print(s.encode('utf-8'))
 
-    if options.check_links:
-        from feedmark.checkers import check_links
-        for failure in check_links(documents):
-            write(repr(failure))
-
     if options.archive_links:
         from feedmark.checkers import archive_links
-        for failure in archive_links(documents):
-            write(repr(failure))
+        result = archive_links(documents)
+        write(json.dumps(result, indent=4))
 
     if options.dump_entries:
         for document in documents:

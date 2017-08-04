@@ -41,21 +41,6 @@ def extract_links_from_documents(documents):
     return links
 
 
-def check_links(documents):
-    links = extract_links_from_documents(documents)
-
-    failures = []
-    for url, section in tqdm(links, total=len(links)):
-        try:
-            r = requests.head(url)
-            status = r.status_code
-        except Exception as e:
-            status = str(e)
-        if status != 200:
-            failures.append((status, url, section))
-    return failures
-
-
 def url_to_dirname_and_filename(url):
     parts = url.split('/')
     parts = parts[2:]
@@ -74,6 +59,7 @@ def download(url, filename):
         for data in response.iter_content():
             f.write(data)
     os.rename(part_filename, filename)
+    return response
 
 
 def archive_links(documents):
@@ -88,12 +74,15 @@ def archive_links(documents):
             if not os.path.exists(dirname):
                 os.makedirs(dirname)
             filename = os.path.join(dirname, filename)
-            download(url, filename)
-            # r = requests.head(url)
-            # status = r.status_code
-            status = 200
+            # if check-only then response = requests.head(url) else ...
+            response = download(url, filename)
+            status = response.status_code
         except Exception as e:
             status = str(e)
-        if status != 200:
-            failures.append((status, url, section))
+        if status not in (200, 301, 302, 303):
+            failures.append({
+                'status': status,
+                'url': url,
+                'section': section.title
+            })
     return failures
