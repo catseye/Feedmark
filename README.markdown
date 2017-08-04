@@ -25,6 +25,7 @@ currently able to:
 *   dump an inverted index of each property found, and its entries
 *   write out an Atom (née RSS) feed containing the parsed entries
 *   parse all of the "Items of Note" lists in The Dossier
+*   archive locally all the web objects linked to in the entries
 
 Example Feedmark documents can be found in the `eg/` directory.
 
