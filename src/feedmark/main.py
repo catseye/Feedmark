@@ -44,10 +44,16 @@ def main(args):
     argparser.add_argument('--limit', metavar='COUNT', type=int, default=None,
         help='Process no more than this many entries when making an Atom or HTML feed'
     )
+    argparser.add_argument('--property-priority-order', metavar='NAMES', type=str, default='',
+        help='Comma-seperated list of property names, giving the order in which '
+             'properties should be output (in Markdown and HTML)'
+    )
 
     options = argparser.parse_args(sys.argv[1:])
 
     documents = []
+
+    ### helpers
 
     def read_document_from(filename):
         with codecs.open(filename, 'r', encoding='utf-8') as f:
@@ -55,17 +61,21 @@ def main(args):
         parser = Parser(markdown_text)
         return parser.parse_document()
 
+    def write(s):
+        print(s.encode('utf-8'))
+
+    ### input
+
     for filename in options.input_files:
         document = read_document_from(filename)
         documents.append(document)
 
-    def write(s):
-        print(s.encode('utf-8'))
+    ### processing
 
     if options.check_links or options.archive_links_to is not None:
         from feedmark.checkers import archive_links
         result = archive_links(documents, options.archive_links_to)
-        write(json.dumps(result, indent=4))
+        write(json.dumps(result, indent=4, sorted=True))
 
     if options.check_against_schema is not None:
         from feedmark.checkers import Schema
@@ -80,7 +90,7 @@ def main(args):
                         'section': str(section),
                         'result': result
                     })
-        write(json.dumps(results, indent=4))
+        write(json.dumps(results, indent=4, sorted=True))
 
     if options.dump_entries:
         for document in documents:
@@ -109,13 +119,13 @@ def main(args):
     if options.output_markdown:
         from feedmark.htmlizer import feedmark_markdownize
         for document in documents:
-            s = feedmark_markdownize(document)
+            s = feedmark_markdownize(document, property_priority_order=options.property_priority_order.split(','))
             write(s)
 
     if options.output_html:
         from feedmark.htmlizer import feedmark_htmlize
         for document in documents:
-            s = feedmark_htmlize(document)
+            s = feedmark_htmlize(document, property_priority_order=options.property_priority_order.split(','))
             write(s)
 
     if options.output_html_snippet:

@@ -41,9 +41,20 @@ def feedmark_htmlize_snippet(documents, limit=None):
     return s
 
 
-def feedmark_markdownize(document):
-    md = u'# ' + document.title + u'\n\n'
-    md += u'\n'.join(document.preamble) + u'\n\n'
+def items_in_priority_order(di, priority):
+    for key in priority:
+        if key in di:
+            yield key, di[key]
+    for key, item in sorted(di.iteritems()):
+        if key not in priority:
+            yield key, item
+
+
+def feedmark_markdownize(document, property_priority_order=None):
+    if property_priority_order is None:
+        property_priority_order = []
+    md = u'{}\n{}\n\n'.format(document.title, '=' * len(document.title))
+    md += u'\n'.join(document.preamble)
     for section in document.sections:
         md += u'\n'
         md += u'### {}\n\n'.format(section.title)
@@ -51,7 +62,7 @@ def feedmark_markdownize(document):
             for name, url in section.images:
                 md += u'![{}]({})\n'.format(name, url)
             md += u'\n'
-        for key, value in section.properties.iteritems():
+        for key, value in items_in_priority_order(section.properties, property_priority_order):
             if isinstance(value, list):
                 for subitem in value:
                     md += u'*   {} @ {}\n'.format(key, subitem)
@@ -62,5 +73,5 @@ def feedmark_markdownize(document):
     return md
 
 
-def feedmark_htmlize(document):
-    return markdown.markdown(feemark_markdownize(document))
+def feedmark_htmlize(document, *args, **kwargs):
+    return markdown.markdown(feemark_markdownize(document, *args, **kwargs))
