@@ -4,7 +4,6 @@ import json
 import sys
 
 from feedmark.atomizer import feedmark_atomize
-from feedmark.htmlizer import feedmark_htmlize
 from feedmark.feeds import extract_sections
 from feedmark.parser import Parser
 
@@ -32,6 +31,9 @@ def main(args):
     )
     argparser.add_argument('--output-atom', metavar='FILENAME', type=str,
         help='Construct an Atom XML feed from the entries and write it out to this file'
+    )
+    argparser.add_argument('--output-html', action='store_true',
+        help='Construct an HTML5 article element from the entries and write it to stdout'
     )
     argparser.add_argument('--output-html-snippet', action='store_true',
         help='Construct a snippet of HTML from the entries and write it to stdout'
@@ -101,8 +103,15 @@ def main(args):
                     by_property.setdefault(key, {}).setdefault(section.title, value)
         write(json.dumps(by_property, indent=4))
 
+    if options.output_html:
+        from feedmark.htmlizer import feedmark_htmlize
+        for document in documents:
+            s = feedmark_htmlize(document)
+            write(s)
+
     if options.output_html_snippet:
-        s = feedmark_htmlize(documents, limit=options.limit)
+        from feedmark.htmlizer import feedmark_htmlize_snippet
+        s = feedmark_htmlize_snippet(documents, limit=options.limit)
         write(s)
 
     if options.output_atom:
