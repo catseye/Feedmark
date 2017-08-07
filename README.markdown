@@ -1,7 +1,7 @@
 Feedmark
 ========
 
-*Version 0.1.  Subject to change in backwards-incompatible ways without notice.*
+*Version 0.2-PRE.  Subject to change in backwards-incompatible ways without notice.*
 
 Feedmark is a format for embedding entities in Markdown files with
 accompanying metadata in a way which is both human-readable and
@@ -9,7 +9,7 @@ machine-extractable.  Feedmark is a subset of Markdown.
 
 To this end, it is not dissimilar to [Falderal][], however it has
 different goals.  It is more oriented for "curational" tasks.
-[The Dossier][] is (nominally) written in Feedmark format.
+[The Dossier][] is written in Feedmark format.
 
 Informally, the format says that every `h3`-level heading in the
 Markdown file gives the title of an entity, and may be followed
@@ -21,13 +21,14 @@ implementation of an extractor for the Feedmark format.  It is
 currently able to:
 
 *   parse a set of Feedmark documents and extract entries from them
-*   dump a summary of the parsed entries and their properties
-*   dump an inverted index of each property found, and its entries
-*   write out an Atom (née RSS) feed containing the parsed entries
-*   parse all of the "Items of Note" lists in The Dossier
+*   check that that the entries conform to a given schema
+*   transform the entries in various ways (index by property, etc)
+*   output the entries in other formats, including JSON,
+    HTML, and Atom (née RSS) feeds
 *   archive locally all the web objects linked to in the entries
 
 Example Feedmark documents can be found in the `eg/` directory.
+Further examples can be found in [The Dossier][].
 
 [Falderal]: http://catseye.tc/node/Falderal
 [The Dossier]: https://github.com/catseye/The-Dossier/
@@ -47,3 +48,17 @@ a subset of Markdown, the effort to format it into something
 nicely human-readable is very small.  YAML and Markdown are both
 fairly easy to read as raw text, but Github, for example,
 automatically formats Markdown as HTML, making it that much nicer.
+
+Or, if you like the transitivity: in the same way that a Markdown
+file is still a readable text file, which is nice, a Feedmark file
+is still a readable Markdown file, which is still a readable text
+file, which is nice.
+
+TODO
+----
+
+Interlink strategy.
+
+"Master Index" creation.
+
+Finish schema checking - finer options, better example, etc.
