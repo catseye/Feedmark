@@ -57,8 +57,22 @@ file, which is nice.
 TODO
 ----
 
-Interlink strategy.
+"common" properties on document which all entries within inherit.
+
+Sub-entries.  Somehow.  For individual games in a series, implementations
+or variations on a programming language, etc.
+
+Finish schema checking - finer options, better example, etc.
+
+Allow trailing `###` on h3-level headings.
+
+### Interlink strategy
 
 "Master Index" creation.
 
-Finish schema checking - finer options, better example, etc.
+Preserve reference-style links in extracted sections.
+
+Rewrite reference-style links that match a certain pattern, e.g.
+the link text starts with `^`, so that they always go to the
+canonical document in which the entry exists, since it may exist
+in multiple.
