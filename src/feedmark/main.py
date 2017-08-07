@@ -27,7 +27,8 @@ def main(args):
         help='Check if web objects linked to from the entries exist'
     )
     argparser.add_argument('--check-against-schema', metavar='FILENAME', type=str, default=None,
-        help='Check if entries have the properties specified by this schema'
+        help='Check if entries have the properties specified by this schema.  This schema will '
+             'also provide hints (such as ordering of properties) when outputting Markdown or HTML.'
     )
     argparser.add_argument('--output-atom', metavar='FILENAME', type=str,
         help='Construct an Atom XML feed from the entries and write it out to this file'
@@ -43,10 +44,6 @@ def main(args):
     )
     argparser.add_argument('--limit', metavar='COUNT', type=int, default=None,
         help='Process no more than this many entries when making an Atom or HTML feed'
-    )
-    argparser.add_argument('--property-priority-order', metavar='NAMES', type=str, default='',
-        help='Comma-seperated list of property names, giving the order in which '
-             'properties should be output (in Markdown and HTML)'
     )
 
     options = argparser.parse_args(sys.argv[1:])
@@ -75,8 +72,9 @@ def main(args):
     if options.check_links or options.archive_links_to is not None:
         from feedmark.checkers import archive_links
         result = archive_links(documents, options.archive_links_to)
-        write(json.dumps(result, indent=4, sorted=True))
+        write(json.dumps(result, indent=4, sort_keys=True))
 
+    schema = None
     if options.check_against_schema is not None:
         from feedmark.checkers import Schema
         schema_document = read_document_from(options.check_against_schema)
@@ -90,7 +88,7 @@ def main(args):
                         'section': str(section),
                         'result': result
                     })
-        write(json.dumps(results, indent=4, sorted=True))
+        write(json.dumps(results, indent=4, sort_keys=True))
 
     if options.dump_entries:
         for document in documents:
@@ -119,13 +117,13 @@ def main(args):
     if options.output_markdown:
         from feedmark.htmlizer import feedmark_markdownize
         for document in documents:
-            s = feedmark_markdownize(document, property_priority_order=options.property_priority_order.split(','))
+            s = feedmark_markdownize(document, schema=schema)
             write(s)
 
     if options.output_html:
         from feedmark.htmlizer import feedmark_htmlize
         for document in documents:
-            s = feedmark_htmlize(document, property_priority_order=options.property_priority_order.split(','))
+            s = feedmark_htmlize(document, schema=schema)
             write(s)
 
     if options.output_html_snippet:

@@ -15,8 +15,10 @@ class Schema(object):
     def __init__(self, document):
         self.document = document
         self.property_rules = {}
+        self.property_priority_order = []
         for section in self.document.sections:
             self.property_rules[section.title] = section
+            self.property_priority_order.append(section.title)
 
     def check(self, section):
         results = []
@@ -27,6 +29,9 @@ class Schema(object):
             if key not in section.properties:
                 results.append("Schema demands '{}' which is not present in {}".format(key, section))
         return results
+
+    def get_property_priority_order(self):
+        return self.property_priority_order
 
 
 def extract_links(html_text):

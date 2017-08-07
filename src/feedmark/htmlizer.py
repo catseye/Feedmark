@@ -50,9 +50,11 @@ def items_in_priority_order(di, priority):
             yield key, item
 
 
-def feedmark_markdownize(document, property_priority_order=None):
-    if property_priority_order is None:
-        property_priority_order = []
+def feedmark_markdownize(document, schema=None):
+    property_priority_order = []
+    if schema is not None:
+        property_priority_order = schema.get_property_priority_order()
+
     md = u'{}\n{}\n\n'.format(document.title, '=' * len(document.title))
     md += u'\n'.join(document.preamble)
     for section in document.sections:
@@ -74,4 +76,4 @@ def feedmark_markdownize(document, property_priority_order=None):
 
 
 def feedmark_htmlize(document, *args, **kwargs):
-    return markdown.markdown(feemark_markdownize(document, *args, **kwargs))
+    return markdown.markdown(feedmark_markdownize(document, *args, **kwargs))
