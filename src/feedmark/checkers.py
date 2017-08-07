@@ -11,6 +11,24 @@ except ImportError:
     def tqdm(x, **kwargs): return x
 
 
+class Schema(object):
+    def __init__(self, document):
+        self.document = document
+        self.property_rules = {}
+        for section in self.document.sections:
+            self.property_rules[section.title] = section
+
+    def check(self, section):
+        results = []
+        for key, value in section.properties.iteritems():
+            if key not in self.property_rules:
+                results.append("{} supplies '{}' which is not defined by schema".format(section, key))
+        for key, value in self.property_rules.iteritems():
+            if key not in section.properties:
+                results.append("Schema demands '{}' which is not present in {}".format(key, section))
+        return results
+
+
 def extract_links(html_text):
 
     links = []

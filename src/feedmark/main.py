@@ -27,6 +27,9 @@ def main(args):
     argparser.add_argument('--check-links', action='store_true',
         help='Check if web objects linked to from the entries exist'
     )
+    argparser.add_argument('--check-against-schema', metavar='FILENAME', type=str, default=None,
+        help='Check if entries have the properties specified by this schema'
+    )
     argparser.add_argument('--output-atom', metavar='FILENAME', type=str,
         help='Construct an Atom XML feed from the entries and write it out to this file'
     )
@@ -41,11 +44,14 @@ def main(args):
 
     documents = []
 
-    for filename in options.input_files:
+    def read_document_from(filename):
         with codecs.open(filename, 'r', encoding='utf-8') as f:
             markdown_text = f.read()
         parser = Parser(markdown_text)
-        document = parser.parse_document()
+        return parser.parse_document()
+
+    for filename in options.input_files:
+        document = read_document_from(filename)
         documents.append(document)
 
     def write(s):
@@ -55,6 +61,21 @@ def main(args):
         from feedmark.checkers import archive_links
         result = archive_links(documents, options.archive_links_to)
         write(json.dumps(result, indent=4))
+
+    if options.check_against_schema is not None:
+        from feedmark.checkers import Schema
+        schema_document = read_document_from(options.check_against_schema)
+        schema = Schema(schema_document)
+        results = []
+        for document in documents:
+            for section in document.sections:
+                result = schema.check(section)
+                if result is not None:
+                    results.append({
+                        'section': str(section),
+                        'result': result
+                    })
+        write(json.dumps(results, indent=4))
 
     if options.dump_entries:
         for document in documents:
