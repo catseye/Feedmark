@@ -32,6 +32,9 @@ def main(args):
     argparser.add_argument('--output-atom', metavar='FILENAME', type=str,
         help='Construct an Atom XML feed from the entries and write it out to this file'
     )
+    argparser.add_argument('--output-markdown', action='store_true',
+        help='Reconstruct a Markdown document from the entries and write it to stdout'
+    )
     argparser.add_argument('--output-html', action='store_true',
         help='Construct an HTML5 article element from the entries and write it to stdout'
     )
@@ -102,6 +105,12 @@ def main(args):
                         key = u'{}@'.format(key)
                     by_property.setdefault(key, {}).setdefault(section.title, value)
         write(json.dumps(by_property, indent=4))
+
+    if options.output_markdown:
+        from feedmark.htmlizer import feedmark_markdownize
+        for document in documents:
+            s = feedmark_markdownize(document)
+            write(s)
 
     if options.output_html:
         from feedmark.htmlizer import feedmark_htmlize

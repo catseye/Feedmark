@@ -41,10 +41,18 @@ def feedmark_htmlize_snippet(documents, limit=None):
     return s
 
 
-def feedmark_htmlize(document):
-    md = '# ' + document.title + '\n\n'
-    md += '\n'.join(document.preamble) + '\n\n'
+def feedmark_markdownize(document):
+    md = u'# ' + document.title + u'\n\n'
+    md += u'\n'.join(document.preamble) + u'\n\n'
     for section in document.sections:
-        md += '### ' + section.title
+        md += u'\n'
+        md += u'### {}\n\n'.format(section.title)
+        for key, value in section.properties.iteritems():
+            md += u'*   {}: {}\n'.format(key, value)
+        md += u'\n'
         md += section.body
-    return markdown.markdown(md)
+    return md
+
+
+def feedmark_htmlize(document):
+    return markdown.markdown(feemark_markdownize(document))
