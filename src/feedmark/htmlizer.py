@@ -47,8 +47,16 @@ def feedmark_markdownize(document):
     for section in document.sections:
         md += u'\n'
         md += u'### {}\n\n'.format(section.title)
+        if section.images:
+            for name, url in section.images:
+                md += u'![{}]({})\n'.format(name, url)
+            md += u'\n'
         for key, value in section.properties.iteritems():
-            md += u'*   {}: {}\n'.format(key, value)
+            if isinstance(value, list):
+                for subitem in value:
+                    md += u'*   {} @ {}\n'.format(key, subitem)
+            else:
+                md += u'*   {}: {}\n'.format(key, value)
         md += u'\n'
         md += section.body
     return md
