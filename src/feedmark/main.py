@@ -83,12 +83,15 @@ def main(args):
         for document in documents:
             for section in document.sections:
                 result = schema.check(section)
-                if result is not None:
+                if result:
                     results.append({
-                        'section': str(section),
+                        'section': section.title,
+                        'document': document.title,
                         'result': result
                     })
-        write(json.dumps(results, indent=4, sort_keys=True))
+        if results:
+            write(json.dumps(results, indent=4, sort_keys=True))
+            sys.exit(1)
 
     if options.dump_entries:
         for document in documents:

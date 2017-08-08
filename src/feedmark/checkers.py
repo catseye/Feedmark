@@ -24,10 +24,13 @@ class Schema(object):
         results = []
         for key, value in section.properties.iteritems():
             if key not in self.property_rules:
-                results.append("{} supplies '{}' which is not defined by schema".format(section, key))
+                results.append(['extra', key])
         for key, value in self.property_rules.iteritems():
+            optional = value.properties.get('optional', 'false') == 'true'
+            if optional:
+                continue
             if key not in section.properties:
-                results.append("Schema demands '{}' which is not present in {}".format(key, section))
+                results.append(['missing', key])
         return results
 
     def get_property_priority_order(self):
