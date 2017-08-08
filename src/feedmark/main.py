@@ -43,6 +43,9 @@ def main(args):
     argparser.add_argument('--output-html-snippet', action='store_true',
         help='Construct a snippet of HTML from the entries and write it to stdout'
     )
+    argparser.add_argument('--rewrite-markdown', action='store_true',
+        help='Rewrite all input Markdown documents in-place. Note!! Destructive!!'
+    )
     argparser.add_argument('--limit', metavar='COUNT', type=int, default=None,
         help='Process no more than this many entries when making an Atom or HTML feed'
     )
@@ -57,7 +60,9 @@ def main(args):
         with codecs.open(filename, 'r', encoding='utf-8') as f:
             markdown_text = f.read()
         parser = Parser(markdown_text)
-        return parser.parse_document()
+        document = parser.parse_document()
+        document.filename = filename
+        return document
 
     def write(s):
         print(s.encode('utf-8'))
@@ -133,6 +138,13 @@ def main(args):
         for document in documents:
             s = feedmark_markdownize(document, schema=schema)
             write(s)
+
+    if options.rewrite_markdown:
+        from feedmark.htmlizer import feedmark_markdownize
+        for document in documents:
+            s = feedmark_markdownize(document, schema=schema)
+            with open(document.filename, 'w') as f:
+                f.write(s.encode('UTF-8'))
 
     if options.output_html:
         from feedmark.htmlizer import feedmark_htmlize

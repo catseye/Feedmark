@@ -50,12 +50,27 @@ def items_in_priority_order(di, priority):
             yield key, item
 
 
+def markdownize_properties(properties, property_priority_order):
+    if not properties:
+        return ''
+    md = ''
+    for key, value in items_in_priority_order(properties, property_priority_order):
+        if isinstance(value, list):
+            for subitem in value:
+                md += u'*   {} @ {}\n'.format(key, subitem)
+        else:
+            md += u'*   {}: {}\n'.format(key, value)
+    md += '\n'
+    return md
+
+
 def feedmark_markdownize(document, schema=None):
     property_priority_order = []
     if schema is not None:
         property_priority_order = schema.get_property_priority_order()
 
     md = u'{}\n{}\n\n'.format(document.title, '=' * len(document.title))
+    md += markdownize_properties(document.properties, property_priority_order)
     md += u'\n'.join(document.preamble)
     for section in document.sections:
         md += u'\n'
@@ -64,14 +79,9 @@ def feedmark_markdownize(document, schema=None):
             for name, url in section.images:
                 md += u'![{}]({})\n'.format(name, url)
             md += u'\n'
-        for key, value in items_in_priority_order(section.properties, property_priority_order):
-            if isinstance(value, list):
-                for subitem in value:
-                    md += u'*   {} @ {}\n'.format(key, subitem)
-            else:
-                md += u'*   {}: {}\n'.format(key, value)
-        md += u'\n'
+        md += markdownize_properties(section.properties, property_priority_order)
         md += section.body
+    md += '\n'
     return md
 
 
