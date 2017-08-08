@@ -82,6 +82,9 @@ class Parser(object):
     def is_heading_line(self):
         return re.match(r'^\#.*?$', self.line)
 
+    def is_reference_link_line(self):
+        return re.match(r'^\[(.*?)\]\:\s*(.*?)\s*$', self.line)
+
     def parse_document(self):
         # Feed       ::= :Title Properties Body {Section}.
         # Section    ::= {:Blank} :Heading {Image} Properties Body.
@@ -91,7 +94,9 @@ class Parser(object):
         title = self.parse_title()
         document = Document(title)
         document.properties = self.parse_properties()
-        document.preamble = self.parse_body()
+        preamble, reference_links = self.parse_body()
+        document.preamble = preamble
+        document.reference_links = reference_links
         while not self.eof():
             section = self.parse_section()
             section.document = document
@@ -156,7 +161,9 @@ class Parser(object):
         self.scan()
         section.images = self.parse_images()
         section.properties = self.parse_properties()
-        section.lines = self.parse_body()
+        lines, reference_links = self.parse_body()
+        section.lines = lines
+        section.reference_links = reference_links
         return section
 
     def parse_images(self):
@@ -170,7 +177,14 @@ class Parser(object):
 
     def parse_body(self):
         lines = []
-        while not self.eof() and not self.is_heading_line():
+        reference_links = []
+        while not self.eof() and not self.is_heading_line() and not self.is_reference_link_line():
             lines.append(self.line)
             self.scan()
-        return lines
+        while not self.eof() and (self.is_reference_link_line() or self.is_blank_line()):
+            if self.is_reference_link_line():
+                match = re.match(r'^\[(.*?)\]\:\s*(.*?)\s*$', self.line)
+                if match:
+                    reference_links.append((match.group(1), match.group(2)))
+            self.scan()
+        return (lines, reference_links)

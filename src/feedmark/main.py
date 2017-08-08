@@ -20,6 +20,7 @@ def main(args):
     argparser.add_argument('--dump-entries', action='store_true',
         help='Display a summary of the entries on standard output'
     )
+    argparser.add_argument('--dump-reference-links', action='store_true')
     argparser.add_argument('--archive-links-to', metavar='DIRNAME', type=str, default=None,
         help='Download a copy of all web objects linked to from the entries'
     )
@@ -92,6 +93,16 @@ def main(args):
         if results:
             write(json.dumps(results, indent=4, sort_keys=True))
             sys.exit(1)
+
+    if options.dump_reference_links:
+        reference = {}
+        for document in documents:
+            for (name, url) in document.reference_links:
+                reference[name] = url
+            for section in document.sections:
+                for (name, url) in section.reference_links:
+                    reference[name] = url
+        write(json.dumps(reference, indent=4, sort_keys=True))
 
     if options.dump_entries:
         for document in documents:
