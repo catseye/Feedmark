@@ -14,13 +14,14 @@ def main(args):
     argparser.add_argument('input_files', nargs='+', metavar='FILENAME', type=str,
         help='Markdown files containing the embedded entries'
     )
+
     argparser.add_argument('--by-property', action='store_true',
         help='Output JSON containing a list of all properties found and the entries they were found on'
     )
     argparser.add_argument('--dump-entries', action='store_true',
         help='Display a summary of the entries on standard output'
     )
-    argparser.add_argument('--dump-reference-links', action='store_true')
+
     argparser.add_argument('--archive-links-to', metavar='DIRNAME', type=str, default=None,
         help='Download a copy of all web objects linked to from the entries'
     )
@@ -31,6 +32,7 @@ def main(args):
         help='Check if entries have the properties specified by this schema.  This schema will '
              'also provide hints (such as ordering of properties) when outputting Markdown or HTML.'
     )
+
     argparser.add_argument('--output-atom', metavar='FILENAME', type=str,
         help='Construct an Atom XML feed from the entries and write it out to this file'
     )
@@ -43,9 +45,18 @@ def main(args):
     argparser.add_argument('--output-html-snippet', action='store_true',
         help='Construct a snippet of HTML from the entries and write it to stdout'
     )
+
     argparser.add_argument('--rewrite-markdown', action='store_true',
         help='Rewrite all input Markdown documents in-place. Note!! Destructive!!'
     )
+
+    argparser.add_argument('--input-refdex', metavar='FILENAME', type=str,
+        help='Load this JSON file as the reference-style links index before processing'
+    )
+    argparser.add_argument('--output-refdex', action='store_true',
+        help='Construct reference-style links index from the entries and write it to stdout as JSON'
+    )
+
     argparser.add_argument('--limit', metavar='COUNT', type=int, default=None,
         help='Process no more than this many entries when making an Atom or HTML feed'
     )
@@ -73,6 +84,11 @@ def main(args):
         document = read_document_from(filename)
         documents.append(document)
 
+    refdex = {}
+    if options.input_refdex:
+        with codecs.open(options.input_refdex, 'r', encoding='utf-8') as f:
+            refdex = json.loads(f.read())
+
     ### processing
 
     if options.check_links or options.archive_links_to is not None:
@@ -99,7 +115,19 @@ def main(args):
             write(json.dumps(results, indent=4, sort_keys=True))
             sys.exit(1)
 
-    if options.dump_reference_links:
+    ### processing: collect refdex phase
+
+    for document in documents:
+        for section in document.sections:
+            refdex[section.title] = {
+                'filename': document.filename,
+                'anchor': section.anchor
+            }
+
+    ### processing: rewrite references phase
+
+    if refdex:
+        # TODO: this is not correct.  it is mainly a reminder.
         reference = {}
         for document in documents:
             for (name, url) in document.reference_links:
@@ -107,7 +135,11 @@ def main(args):
             for section in document.sections:
                 for (name, url) in section.reference_links:
                     reference[name] = url
-        write(json.dumps(reference, indent=4, sort_keys=True))
+
+    ### output
+
+    if options.output_refdex:
+        write(json.dumps(refdex, indent=4, sort_keys=True))
 
     if options.dump_entries:
         for document in documents:

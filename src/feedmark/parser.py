@@ -54,6 +54,11 @@ class Section(object):
                 pass
         raise NotImplementedError
 
+    @property
+    def anchor(self):
+        title = re.sub(r"[':,.!]", '', self.title)
+        return (title.replace(u' ', u'-').lower()).encode('utf-8')
+
 
 class Parser(object):
 

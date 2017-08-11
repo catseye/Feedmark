@@ -10,9 +10,7 @@ def construct_entry_url(section):
     if 'link-to-anchors-on' not in section.document.properties:
         return None
 
-    title = re.sub(r"[':,.!]", '', section.title)
-    anchor = (title.replace(u' ', u'-').lower()).encode('utf-8')
-    return '{}#{}'.format(section.document.properties['link-to-anchors-on'], quote_plus(anchor))
+    return '{}#{}'.format(section.document.properties['link-to-anchors-on'], quote_plus(section.anchor))
 
 
 def extract_feed_properties(document):
