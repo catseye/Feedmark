@@ -85,7 +85,7 @@ class Parser(object):
         return re.match(r'^\*\s+(.*?)\s*(\:|\@)\s*(.*?)\s*$', self.line)
 
     def is_heading_line(self):
-        return re.match(r'^\#.*?$', self.line)
+        return re.match(r'^\#\#\#\s+(.*?)\s*$', self.line)
 
     def is_reference_link_line(self):
         return re.match(r'^\[(.*?)\]\:\s*(.*?)\s*$', self.line)
@@ -109,7 +109,7 @@ class Parser(object):
         return document
 
     def parse_title(self):
-        match = re.match(r'^\#\s*([^#].*?)\s*$', self.line)
+        match = re.match(r'^\#\s+(.*?)\s*$', self.line)
         if match:
             title = match.group(1)
             self.scan()
@@ -158,7 +158,7 @@ class Parser(object):
         while self.is_blank_line():
             self.scan()
 
-        match = re.match(r'^\#\#\#\s*([^#].*?)\s*$', self.line)
+        match = re.match(r'^\#\#\#\s+(.*?)\s*$', self.line)
         if not match:
             raise ValueError('Expected section, found "{}"'.format(self.line))
 
