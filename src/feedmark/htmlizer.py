@@ -64,6 +64,16 @@ def markdownize_properties(properties, property_priority_order):
     return md
 
 
+def markdownize_reference_links(reference_links):
+    if not reference_links:
+        return ''
+    md = ''
+    md += '\n'
+    for name, url in reference_links:
+        md += '[{}]: {}\n'.format(name, url)
+    return md
+
+
 def feedmark_markdownize(document, schema=None):
     property_priority_order = []
     if schema is not None:
@@ -72,6 +82,7 @@ def feedmark_markdownize(document, schema=None):
     md = u'{}\n{}\n\n'.format(document.title, '=' * len(document.title))
     md += markdownize_properties(document.properties, property_priority_order)
     md += u'\n'.join(document.preamble)
+    md += markdownize_reference_links(document.reference_links)
     for section in document.sections:
         md += u'\n'
         md += u'### {}\n\n'.format(section.title)
@@ -81,6 +92,7 @@ def feedmark_markdownize(document, schema=None):
             md += u'\n'
         md += markdownize_properties(section.properties, property_priority_order)
         md += section.body
+        md += markdownize_reference_links(section.reference_links)
     md += '\n'
     return md
 
