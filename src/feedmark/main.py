@@ -126,15 +126,21 @@ def main(args):
 
     ### processing: rewrite references phase
 
+    def rewrite_reference_links(refdex, reference_links):
+        from urllib import quote
+
+        new_reference_links = []
+        for (name, url) in reference_links:
+            if name in refdex:
+                url = '{}#{}'.format(quote(refdex[name]['filename']), quote(refdex[name]['anchor']))
+            new_reference_links.append((name, url))
+        return new_reference_links
+
     if refdex:
-        # TODO: this is not correct.  it is mainly a reminder.
-        reference = {}
         for document in documents:
-            for (name, url) in document.reference_links:
-                reference[name] = url
+            document.reference_links = rewrite_reference_links(refdex, document.reference_links)
             for section in document.sections:
-                for (name, url) in section.reference_links:
-                    reference[name] = url
+                section.reference_links = rewrite_reference_links(refdex, section.reference_links)
 
     ### output
 

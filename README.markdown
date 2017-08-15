@@ -67,8 +67,6 @@ Note that this facility is still under development.
 
 ### Interlink documents
 
-Note that this facility is *very much* still under development.
-
 Markdown supports "reference-style" links, which are not inline
 with the text.
 
@@ -80,6 +78,8 @@ entry exists, since it may exist in multiple, or be moved over time.
    bin/feedmark eg/*.md --output-refdex >refdex.json
    bin/feedmark --input-refdex=refdex.json --rewrite-markdown eg/*.md
 
+Note that this facility is still under development.
+
 ### Several other things
 
 *   transform the entries in various ways (index by property, etc)
@@ -88,7 +88,7 @@ entry exists, since it may exist in multiple, or be moved over time.
 Motivation
 ----------
 
-Why is this desirable?  Because if your structured data format is
+Why is Feedmark desirable?  Because if your structured data format is
 a subset of Markdown, the effort to format it into something
 nicely human-readable is very small.  YAML and Markdown are both
 fairly easy to read as raw text, but Github, for example,
@@ -107,17 +107,9 @@ TODO
 Sub-entries.  Somehow.  For individual games in a series, implementations
 or variations on a programming language, etc.
 
-Finish schema checking - finer options, better example, etc.
-
 Allow trailing `###` on h3-level headings.
 
-### Interlink strategy
-
-"Master Index" creation.
-
-Preserve reference-style links in extracted sections.
-
-Implement refdex.
+Index creation from refdex, for permalinks.
 
 [Falderal]: http://catseye.tc/node/Falderal
 [The Dossier]: https://github.com/catseye/The-Dossier/
