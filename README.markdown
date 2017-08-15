@@ -61,7 +61,7 @@ same files that were read in as input.  (This is destructive, but it
 is recommended that the original files be under version control such
 as `git`, which will easily allow the changes to be reverted.)
 
-   bin/feedmark --rewrite-markdown eg/*.md
+    bin/feedmark --rewrite-markdown eg/*.md
 
 Note that this facility is still under development.
 
@@ -70,20 +70,28 @@ Note that this facility is still under development.
 Markdown supports "reference-style" links, which are not inline
 with the text.
 
-feedmark aims to rewrite reference-style links that match a pattern,
-e.g. the link text is the name of an entry preceded by `*`, so that they
+`feedmark` can rewrite reference-style links that match the name of
+an entry in a previously-created "refdex", so that they
 can be kept current and point to the canonical document in which the
 entry exists, since it may exist in multiple, or be moved over time.
 
-   bin/feedmark eg/*.md --output-refdex >refdex.json
-   bin/feedmark --input-refdex=refdex.json --rewrite-markdown eg/*.md
+    bin/feedmark eg/*.md --output-refdex >refdex.json
+    bin/feedmark --input-refdex=refdex.json --rewrite-markdown eg/*.md
 
 Note that this facility is still under development.
 
-### Several other things
+### Write out to miscellaneous formats
 
-*   transform the entries in various ways (index by property, etc)
-*   output the entries in Markdown, JSON, and HTML
+Output entries as JSON, indexed by entry, or by property.
+
+    bin/feedmark --dump-entries eg/*.md
+    bin/feedmark --by-property eg/*.md
+
+Output entries as Markdown, or HTML, or a snippet of HTML
+
+    bin/feedmark --output-markdown eg/*.md
+    bin/feedmark --output-html eg/*.md
+    bin/feedmark --output-html-snippet eg/*.md
 
 Motivation
 ----------
