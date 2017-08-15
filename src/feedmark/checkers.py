@@ -1,4 +1,5 @@
 import os
+from time import sleep
 import urllib
 
 from bs4 import BeautifulSoup
@@ -43,9 +44,6 @@ def extract_links(html_text):
     soup = BeautifulSoup(html_text, 'html.parser')
     for link in soup.find_all('a'):
         url = link.get('href')
-        if not url.startswith(('http://', 'https://')):
-            print('skipping url', url)
-            continue
         links.append(url)
 
     return links
@@ -88,6 +86,9 @@ def download(url, filename):
     return response
 
 
+delay_between_fetches = 0
+
+
 def archive_links(documents, dest_dir):
     """If dest_dir is None, links will only be checked for existence, not downloaded."""
     links = extract_links_from_documents(documents)
@@ -95,6 +96,8 @@ def archive_links(documents, dest_dir):
     failures = []
     for url, section in tqdm(links, total=len(links)):
         try:
+            if not url.startswith(('http://', 'https://')):
+                raise ValueError('Not http: {}'.format(url))
             if dest_dir is not None:
                 dirname, filename = url_to_dirname_and_filename(url)
                 dirname = os.path.join(dest_dir, dirname)
@@ -113,4 +116,6 @@ def archive_links(documents, dest_dir):
                 'url': url,
                 'section': str(section)
             })
+        if delay_between_fetches > 0:
+            sleep(delay_between_fetches)
     return failures
