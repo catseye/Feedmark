@@ -73,6 +73,8 @@ def url_to_dirname_and_filename(url):
     parts = parts[1:]
     filename = '/'.join(parts)
     filename = urllib.quote_plus(filename)
+    if not filename:
+        filename = 'index.html'
     return (domain_name, filename)
 
 
