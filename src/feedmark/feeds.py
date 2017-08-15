@@ -10,9 +10,7 @@ def construct_entry_url(section):
     if 'link-to-anchors-on' not in section.document.properties:
         return None
 
-    title = re.sub(r"[':,.!]", '', section.title)
-    anchor = (title.replace(u' ', u'-').lower()).encode('utf-8')
-    return '{}#{}'.format(section.document.properties['link-to-anchors-on'], quote_plus(anchor))
+    return '{}#{}'.format(section.document.properties['link-to-anchors-on'], quote_plus(section.anchor))
 
 
 def extract_feed_properties(document):
@@ -28,7 +26,6 @@ def extract_sections(documents):
     sections = []
     for document in documents:
         for section in document.sections:
-            section.document = document  # TODO: maybe the parser should do this for us
             sections.append(section)
     sections.sort(key=lambda section: section.publication_date, reverse=True)
     return sections

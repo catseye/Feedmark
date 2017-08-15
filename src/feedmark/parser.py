@@ -11,16 +11,23 @@ class Document(object):
 
         self.sections = []
 
+    def __str__(self):
+        return "document '{}'".format(self.title.encode('utf-8'))
+
 
 class Section(object):
     def __init__(self, title):
+        self.document = None
         self.title = title
         self.properties = {}
 
         self.lines = []
 
     def __str__(self):
-        return "section '{}'".format(self.title.encode('utf-8'))
+        s = "section '{}'".format(self.title.encode('utf-8'))
+        if self.document:
+            s += " of " + str(self.document)
+        return s
 
     def add_line(self, line):
         self.lines.append(line.rstrip())
@@ -46,6 +53,11 @@ class Section(object):
             except ValueError:
                 pass
         raise NotImplementedError
+
+    @property
+    def anchor(self):
+        title = re.sub(r"[':,.!]", '', self.title)
+        return (title.replace(u' ', u'-').lower()).encode('utf-8')
 
 
 class Parser(object):
@@ -73,7 +85,10 @@ class Parser(object):
         return re.match(r'^\*\s+(.*?)\s*(\:|\@)\s*(.*?)\s*$', self.line)
 
     def is_heading_line(self):
-        return re.match(r'^\#.*?$', self.line)
+        return re.match(r'^\#\#\#\s+(.*?)\s*$', self.line)
+
+    def is_reference_link_line(self):
+        return re.match(r'^\[(.*?)\]\:\s*(.*?)\s*$', self.line)
 
     def parse_document(self):
         # Feed       ::= :Title Properties Body {Section}.
@@ -84,14 +99,17 @@ class Parser(object):
         title = self.parse_title()
         document = Document(title)
         document.properties = self.parse_properties()
-        document.preamble = self.parse_body()
+        preamble, reference_links = self.parse_body()
+        document.preamble = preamble
+        document.reference_links = reference_links
         while not self.eof():
             section = self.parse_section()
+            section.document = document
             document.sections.append(section)
         return document
 
     def parse_title(self):
-        match = re.match(r'^\#\s*([^#].*?)\s*$', self.line)
+        match = re.match(r'^\#\s+(.*?)\s*$', self.line)
         if match:
             title = match.group(1)
             self.scan()
@@ -140,7 +158,7 @@ class Parser(object):
         while self.is_blank_line():
             self.scan()
 
-        match = re.match(r'^\#\#\#\s*([^#].*?)\s*$', self.line)
+        match = re.match(r'^\#\#\#\s+(.*?)\s*$', self.line)
         if not match:
             raise ValueError('Expected section, found "{}"'.format(self.line))
 
@@ -148,7 +166,9 @@ class Parser(object):
         self.scan()
         section.images = self.parse_images()
         section.properties = self.parse_properties()
-        section.lines = self.parse_body()
+        lines, reference_links = self.parse_body()
+        section.lines = lines
+        section.reference_links = reference_links
         return section
 
     def parse_images(self):
@@ -162,7 +182,14 @@ class Parser(object):
 
     def parse_body(self):
         lines = []
-        while not self.eof() and not self.is_heading_line():
+        reference_links = []
+        while not self.eof() and not self.is_heading_line() and not self.is_reference_link_line():
             lines.append(self.line)
             self.scan()
-        return lines
+        while not self.eof() and (self.is_reference_link_line() or self.is_blank_line()):
+            if self.is_reference_link_line():
+                match = re.match(r'^\[(.*?)\]\:\s*(.*?)\s*$', self.line)
+                if match:
+                    reference_links.append((match.group(1), match.group(2)))
+            self.scan()
+        return (lines, reference_links)
