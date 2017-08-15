@@ -116,13 +116,16 @@ def main(args):
             sys.exit(1)
 
     ### processing: collect refdex phase
+    # NOTE: we only run this if we were asked to output a refdex -
+    # this is to prevent scurrilous insertion of refdex entries when rewriting.
 
-    for document in documents:
-        for section in document.sections:
-            refdex[section.title] = {
-                'filename': document.filename,
-                'anchor': section.anchor
-            }
+    if options.output_refdex:
+        for document in documents:
+            for section in document.sections:
+                refdex[section.title] = {
+                    'filename': document.filename,
+                    'anchor': section.anchor
+                }
 
     ### processing: rewrite references phase
 
