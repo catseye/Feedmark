@@ -112,6 +112,8 @@ file, which is nice.
 TODO
 ----
 
+Refactor internally for better organization.
+
 Handle redirects (302, 303) better when archiving external links.
 
 "common" properties on document which all entries within inherit.

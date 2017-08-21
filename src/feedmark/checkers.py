@@ -53,6 +53,8 @@ def extract_links(html_text):
 def extract_links_from_documents(documents):
     links = []
     for document in documents:
+        for name, url in document.reference_links:
+            links.append((url, None))
         for section in document.sections:
             for (name, url) in section.images:
                 links.append((url, section))
@@ -62,6 +64,8 @@ def extract_links_from_documents(documents):
                         links.extend([(url, section) for url in extract_links(markdown.markdown(subitem))])
                 else:
                     links.extend([(url, section) for url in extract_links(markdown.markdown(value))])
+            for name, url in section.reference_links:
+                links.append((url, section))
             links.extend([(url, section) for url in extract_links(markdown.markdown(section.body))])
     return links
 
