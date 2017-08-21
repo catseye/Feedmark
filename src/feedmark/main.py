@@ -20,9 +20,12 @@ def main(args):
         help='Output JSON containing a list of all properties found and the entries they were found on'
     )
     argparser.add_argument('--dump-entries', action='store_true',
-        help='Display a summary of the entries on standard output'
+        help='Output JSON containing a summary of the entries on standard output'
     )
 
+    argparser.add_argument('--output-links', action='store_true',
+        help='Output JSON containing all web links extracted from the entries'
+    )
     argparser.add_argument('--archive-links-to', metavar='DIRNAME', type=str, default=None,
         help='Download a copy of all web objects linked to from the entries'
     )
@@ -190,6 +193,12 @@ def main(args):
                         key = u'{}@'.format(key)
                     by_property.setdefault(key, {}).setdefault(section.title, value)
         write(json.dumps(by_property, indent=4))
+
+    if options.output_links:
+        from feedmark.checkers import extract_links_from_documents
+        links = extract_links_from_documents(documents)
+        jsonable_links = [(url, section.title) for (url, section) in links]
+        write(json.dumps(jsonable_links, indent=4, sort_keys=True))
 
     if options.output_markdown:
         from feedmark.htmlizer import feedmark_markdownize
