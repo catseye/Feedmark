@@ -2,6 +2,7 @@ from argparse import ArgumentParser
 import codecs
 import json
 import sys
+import urllib
 
 from feedmark.atomizer import feedmark_atomize
 from feedmark.feeds import extract_sections
@@ -44,6 +45,12 @@ def main(args):
     )
     argparser.add_argument('--output-html-snippet', action='store_true',
         help='Construct a snippet of HTML from the entries and write it to stdout'
+    )
+    argparser.add_argument('--output-toc', action='store_true',
+        help='Construct a Markdown Table of Contents from the entries and write it to stdout'
+    )
+    argparser.add_argument('--include-section-count', action='store_true',
+        help='When creating a ToC, display the count of contained sections alongside each document'
     )
 
     argparser.add_argument('--rewrite-markdown', action='store_true',
@@ -197,6 +204,24 @@ def main(args):
         from feedmark.htmlizer import feedmark_htmlize_snippet
         s = feedmark_htmlize_snippet(documents, limit=options.limit)
         write(s)
+
+    if options.output_toc:
+        for document in documents:
+            filename = document.filename
+            if ' ' in filename:
+                filename = urllib.quote(filename)
+
+            signs = []
+            section_count = len(document.sections)
+            if options.include_section_count and section_count > 1:
+                signs.append('({})'.format(section_count))
+
+            if 'status' in document.properties:
+                if document.properties['status'] == 'under construction':
+                    signs.append('*(U)*')
+
+            line = "*   [{}]({}) {}".format(document.title, filename, ' '.join(signs))
+            write(line)
 
     if options.output_atom:
         feedmark_atomize(documents, options.output_atom, limit=options.limit)

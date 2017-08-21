@@ -1,7 +1,7 @@
 Feedmark
 ========
 
-*Version 0.2.  Subject to change in backwards-incompatible ways without notice.*
+*Version 0.3-PRE.  Subject to change in backwards-incompatible ways without notice.*
 
 Feedmark is a format for embedding entities in Markdown files with
 accompanying metadata in a way which is both human-readable and
@@ -87,11 +87,13 @@ Output entries as JSON, indexed by entry, or by property.
     bin/feedmark --dump-entries eg/*.md
     bin/feedmark --by-property eg/*.md
 
-Output entries as Markdown, or HTML, or a snippet of HTML
+Output entries as Markdown, or HTML.  Or lightly processed as a
+snippet of HTML or a Markdown Table of Contents.
 
     bin/feedmark --output-markdown eg/*.md
     bin/feedmark --output-html eg/*.md
     bin/feedmark --output-html-snippet eg/*.md
+    bin/feedmark --output-toc eg/*.md
 
 Motivation
 ----------
@@ -109,6 +111,8 @@ file, which is nice.
 
 TODO
 ----
+
+Handle redirects (302, 303) better when archiving external links.
 
 "common" properties on document which all entries within inherit.
 
