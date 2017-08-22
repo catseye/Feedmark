@@ -5,7 +5,6 @@ import re
 import sys
 import urllib
 
-from feedmark.atomizer import feedmark_atomize
 from feedmark.feeds import extract_sections
 from feedmark.parser import Parser
 
@@ -202,26 +201,26 @@ def main(args):
         write(json.dumps(jsonable_links, indent=4, sort_keys=True))
 
     if options.output_markdown:
-        from feedmark.htmlizer import feedmark_markdownize
+        from feedmark.formats.markdown import feedmark_markdownize
         for document in documents:
             s = feedmark_markdownize(document, schema=schema)
             write(s)
 
     if options.rewrite_markdown:
-        from feedmark.htmlizer import feedmark_markdownize
+        from feedmark.formats.markdown import feedmark_markdownize
         for document in documents:
             s = feedmark_markdownize(document, schema=schema)
             with open(document.filename, 'w') as f:
                 f.write(s.encode('UTF-8'))
 
     if options.output_html:
-        from feedmark.htmlizer import feedmark_htmlize
+        from feedmark.formats.markdown import feedmark_htmlize
         for document in documents:
             s = feedmark_htmlize(document, schema=schema)
             write(s)
 
     if options.output_html_snippet:
-        from feedmark.htmlizer import feedmark_htmlize_snippet
+        from feedmark.formats.markdown import feedmark_htmlize_snippet
         s = feedmark_htmlize_snippet(documents, limit=options.limit)
         write(s)
 
@@ -249,6 +248,7 @@ def main(args):
             write(line)
 
     if options.output_atom:
+        from feedmark.formats.atom import feedmark_atomize
         feedmark_atomize(documents, options.output_atom, limit=options.limit)
 
 
