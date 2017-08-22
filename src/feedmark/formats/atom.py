@@ -1,7 +1,9 @@
+from __future__ import absolute_import
+
 from datetime import datetime
 
 import atomize
-import markdown
+from markdown import markdown
 
 from feedmark.feeds import extract_feed_properties, extract_sections, construct_entry_url
 
@@ -11,7 +13,8 @@ def convert_section_to_entry(section, properties, markdown_links_base=None):
     guid = properties['url'] + "/" + section.title
     updated = section.publication_date
 
-    summary = atomize.Summary(markdown.markdown(section.body), content_type='html')
+    markdown(section.body)
+    summary = atomize.Summary(markdown(section.body), content_type='html')
 
     links = []
     entry_url = construct_entry_url(section)
