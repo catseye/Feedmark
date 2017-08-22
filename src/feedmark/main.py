@@ -1,6 +1,7 @@
 from argparse import ArgumentParser
 import codecs
 import json
+import re
 import sys
 import urllib
 
@@ -235,9 +236,14 @@ def main(args):
             if options.include_section_count and section_count > 1:
                 signs.append('({})'.format(section_count))
 
-            if 'status' in document.properties:
-                if document.properties['status'] == 'under construction':
-                    signs.append('*(U)*')
+            if document.properties.get('status') == 'under construction':
+                signs.append('*(U)*')
+            elif document.properties.get('publication-date'):
+                pubdate = document.properties['publication-date']
+                match = re.match(r'^\d+\s+(\w+\s+\d+)$', pubdate)
+                if match:
+                    pubdate = match.group(1)
+                signs.append('({})'.format(pubdate))
 
             line = "*   [{}]({}) {}".format(document.title, filename, ' '.join(signs))
             write(line)
