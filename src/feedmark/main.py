@@ -240,7 +240,7 @@ def main(args):
                 signs.append('*(U)*')
             elif document.properties.get('publication-date'):
                 pubdate = document.properties['publication-date']
-                match = re.match(r'^\d+\s+(\w+\s+\d+)$', pubdate)
+                match = re.search(r'(\w+\s+\d\d\d\d)', pubdate)
                 if match:
                     pubdate = match.group(1)
                 signs.append('({})'.format(pubdate))
