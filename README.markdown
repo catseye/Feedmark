@@ -50,7 +50,7 @@ make `HEAD` requests and will not save any of the responses.
 A Feedmark schema is simply another Feedmark document, one in which
 each entry describes a property that entries should have.
 
-    bin/feedmark eg/Video\ games.md --check-against=eg/Video\ games\ schema.md
+    bin/feedmark eg/*Sightings*.md --check-against=eg/schema/Llama\ sighting.md
 
 Note that this facility is still under development.
 
