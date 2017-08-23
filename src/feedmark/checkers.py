@@ -1,10 +1,12 @@
+from __future__ import absolute_import
+
 import os
 import re
 from time import sleep
 import urllib
 
 from bs4 import BeautifulSoup
-import markdown
+from markdown import markdown
 import requests
 
 try:
@@ -61,12 +63,12 @@ def extract_links_from_documents(documents):
             for key, value in section.properties.iteritems():
                 if isinstance(value, list):
                     for subitem in value:
-                        links.extend([(url, section) for url in extract_links(markdown.markdown(subitem))])
+                        links.extend([(url, section) for url in extract_links(markdown(subitem))])
                 else:
-                    links.extend([(url, section) for url in extract_links(markdown.markdown(value))])
+                    links.extend([(url, section) for url in extract_links(markdown(value))])
             for name, url in section.reference_links:
                 links.append((url, section))
-            links.extend([(url, section) for url in extract_links(markdown.markdown(section.body))])
+            links.extend([(url, section) for url in extract_links(markdown(section.body))])
     return links
 
 

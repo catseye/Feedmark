@@ -1,7 +1,9 @@
+from __future__ import absolute_import
+
 from datetime import datetime
 import re
 
-import markdown
+from markdown import markdown
 
 from feedmark.feeds import extract_sections, construct_entry_url
 
@@ -16,7 +18,7 @@ def strip_outer_p(text):
 def render_section_snippet(section):
     date = section.publication_date.strftime('%b %-d, %Y')
     if 'summary' in section.properties:
-        summary = strip_outer_p(markdown.markdown(section.properties['summary']))
+        summary = strip_outer_p(markdown(section.properties['summary']))
     else:
         summary = section.title
     url = construct_entry_url(section)
@@ -98,4 +100,4 @@ def feedmark_markdownize(document, schema=None):
 
 
 def feedmark_htmlize(document, *args, **kwargs):
-    return markdown.markdown(feedmark_markdownize(document, *args, **kwargs))
+    return markdown(feedmark_markdownize(document, *args, **kwargs))
