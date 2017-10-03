@@ -6,8 +6,9 @@ from time import sleep
 import urllib
 
 from bs4 import BeautifulSoup
-from markdown import markdown
 import requests
+
+from feedmark.formats.markdown import markdown_to_html5
 
 try:
     from tqdm import tqdm
@@ -63,12 +64,12 @@ def extract_links_from_documents(documents):
             for key, value in section.properties.iteritems():
                 if isinstance(value, list):
                     for subitem in value:
-                        links.extend([(url, section) for url in extract_links(markdown(subitem))])
+                        links.extend([(url, section) for url in extract_links(markdown_to_html5(subitem))])
                 else:
-                    links.extend([(url, section) for url in extract_links(markdown(value))])
+                    links.extend([(url, section) for url in extract_links(markdown_to_html5(value))])
             for name, url in section.reference_links:
                 links.append((url, section))
-            links.extend([(url, section) for url in extract_links(markdown(section.body))])
+            links.extend([(url, section) for url in extract_links(markdown_to_html5(section.body))])
     return links
 
 

@@ -4,8 +4,20 @@ from datetime import datetime
 import re
 
 from markdown import markdown
+from markdown.extensions import Extension
 
 from feedmark.feeds import extract_sections, construct_entry_url
+
+
+class AnchorExtension(Extension):
+    def extendMarkdown(self, md, md_globals):
+        pass
+anchor_extension = AnchorExtension()
+
+
+def markdown_to_html5(text):
+    """Canonical function used within `feedmark` to convert Markdown text to a HTML5 snippet."""
+    return markdown(text, extensions=[anchor_extension])
 
 
 def strip_outer_p(text):
