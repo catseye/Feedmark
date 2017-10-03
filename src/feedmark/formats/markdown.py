@@ -3,21 +3,20 @@ from __future__ import absolute_import
 from datetime import datetime
 import re
 
+from bs4 import BeautifulSoup, Tag
 from markdown import markdown
-from markdown.extensions import Extension
 
 from feedmark.feeds import extract_sections, construct_entry_url
-
-
-class AnchorExtension(Extension):
-    def extendMarkdown(self, md, md_globals):
-        pass
-anchor_extension = AnchorExtension()
+from feedmark.parser import anchor_for
 
 
 def markdown_to_html5(text):
     """Canonical function used within `feedmark` to convert Markdown text to a HTML5 snippet."""
-    return markdown(text, extensions=[anchor_extension])
+    html_text = markdown(text)
+    soup = BeautifulSoup(html_text, 'html.parser')
+    for tag in soup.find_all('h3'):
+        tag['id'] = anchor_for(tag.get_text())
+    return unicode(soup)
 
 
 def strip_outer_p(text):
@@ -30,7 +29,7 @@ def strip_outer_p(text):
 def render_section_snippet(section):
     date = section.publication_date.strftime('%b %-d, %Y')
     if 'summary' in section.properties:
-        summary = strip_outer_p(markdown(section.properties['summary']))
+        summary = strip_outer_p(markdown_to_html5(section.properties['summary']))
     else:
         summary = section.title
     url = construct_entry_url(section)
@@ -112,4 +111,4 @@ def feedmark_markdownize(document, schema=None):
 
 
 def feedmark_htmlize(document, *args, **kwargs):
-    return markdown(feedmark_markdownize(document, *args, **kwargs))
+    return markdown_to_html5(feedmark_markdownize(document, *args, **kwargs))

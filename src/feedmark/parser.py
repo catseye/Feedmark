@@ -4,6 +4,11 @@ from datetime import datetime
 import re
 
 
+def anchor_for(title):
+    title = re.sub(r"[':,.!]", '', title)
+    return (title.replace(u' ', u'-').lower()).encode('utf-8')
+
+
 class Document(object):
     def __init__(self, title):
         self.title = title
@@ -56,8 +61,7 @@ class Section(object):
 
     @property
     def anchor(self):
-        title = re.sub(r"[':,.!]", '', self.title)
-        return (title.replace(u' ', u'-').lower()).encode('utf-8')
+        return anchor_for(self.title)
 
 
 class Parser(object):
