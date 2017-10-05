@@ -72,6 +72,9 @@ def main(args):
     argparser.add_argument('--output-refdex', action='store_true',
         help='Construct reference-style links index from the entries and write it to stdout as JSON'
     )
+    argparser.add_argument('--input-refdex-filename-prefix', type=str, default=None,
+        help='After loading refdexes, prepend this to filename of each refdex'
+    )
 
     argparser.add_argument('--limit', metavar='COUNT', type=int, default=None,
         help='Process no more than this many entries when making an Atom or HTML feed'
@@ -111,6 +114,10 @@ def main(args):
     for input_refdex in input_refdexes:
         with codecs.open(input_refdex, 'r', encoding='utf-8') as f:
             local_refdex = json.loads(f.read())
+            if options.input_refdex_filename_prefix:
+                for key, value in local_refdex.iteritems():
+                    if 'filename' in value:
+                        value['filename'] = options.input_refdex_filename_prefix + value['filename']
             refdex.update(local_refdex)
 
     ### processing
