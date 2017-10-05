@@ -66,6 +66,9 @@ def main(args):
     argparser.add_argument('--input-refdex', metavar='FILENAME', type=str,
         help='Load this JSON file as the reference-style links index before processing'
     )
+    argparser.add_argument('--input-refdexes', metavar='FILENAME', type=str,
+        help='Load these JSON files as the reference-style links index before processing'
+    )
     argparser.add_argument('--output-refdex', action='store_true',
         help='Construct reference-style links index from the entries and write it to stdout as JSON'
     )
@@ -98,9 +101,17 @@ def main(args):
         documents.append(document)
 
     refdex = {}
+    input_refdexes = []
     if options.input_refdex:
-        with codecs.open(options.input_refdex, 'r', encoding='utf-8') as f:
-            refdex = json.loads(f.read())
+        input_refdexes.append(options.input_refdex)
+    if options.input_refdexes:
+        for input_refdex in options.input_refdexes.split(','):
+            input_refdexes.append(input_refdex.strip())
+
+    for input_refdex in input_refdexes:
+        with codecs.open(input_refdex, 'r', encoding='utf-8') as f:
+            local_refdex = json.loads(f.read())
+            refdex.update(local_refdex)
 
     ### processing
 
