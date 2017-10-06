@@ -20,7 +20,10 @@ def main(args):
         help='Output JSON containing a list of all properties found and the entries they were found on'
     )
     argparser.add_argument('--dump-entries', action='store_true',
-        help='Output JSON containing a summary of the entries on standard output'
+        help='Output indented summary of the entries on standard output'
+    )
+    argparser.add_argument('--output-json', action='store_true',
+        help='Output JSON containing entries on standard output'
     )
 
     argparser.add_argument('--output-links', action='store_true',
@@ -201,6 +204,23 @@ def main(args):
                             write(u'        {}'.format(subitem))
                     else:
                         write(u'    {}: {}'.format(key, value))
+
+    if options.output_json:
+        output_json = {}
+        for document in documents:
+            document_json = {
+                'title': document.title,
+                'properties': document.properties,
+            }
+            for section in document.sections:
+                section_json = {
+                    'title': section.title,
+                    'images': section.images,
+                    'properties': section.properties,
+                }
+                document_json[section.title] = section_json
+            output_json[document.title] = document_json
+        write(json.dumps(output_json, indent=4, sort_keys=True))
 
     if options.by_property:
         by_property = {}
