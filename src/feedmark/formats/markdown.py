@@ -15,7 +15,7 @@ def markdown_to_html5(text):
     html_text = markdown(text)
     soup = BeautifulSoup(html_text, 'html.parser')
     for tag in soup.find_all('h3'):
-        tag['id'] = anchor_for(tag.get_text())
+        tag['id'] = anchor_for(tag.get_text()).decode('utf-8')
     return unicode(soup)
 
 
