@@ -176,7 +176,13 @@ def main(args):
         new_reference_links = []
         for (name, url) in reference_links:
             if name in refdex:
-                url = '{}#{}'.format(quote(refdex[name]['filename']), quote(refdex[name]['anchor']))
+                entry = refdex[name]
+                if 'filename' in entry and 'anchor' in entry:
+                    url = '{}#{}'.format(quote(entry['filename']), quote(entry['anchor']))
+                elif 'url' in entry:
+                    url = entry['url']
+                else:
+                    raise ValueError("Badly formed refdex entry: {}".format(json.dumps(entry)))
             new_reference_links.append((name, url))
         return new_reference_links
 
