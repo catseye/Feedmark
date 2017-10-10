@@ -9,6 +9,15 @@ from feedmark.feeds import extract_sections
 from feedmark.parser import Parser
 
 
+def read_document_from(filename):
+    with codecs.open(filename, 'r', encoding='utf-8') as f:
+        markdown_text = f.read()
+    parser = Parser(markdown_text)
+    document = parser.parse_document()
+    document.filename = filename
+    return document
+
+
 def main(args):
     argparser = ArgumentParser()
 
@@ -89,14 +98,6 @@ def main(args):
 
     ### helpers
 
-    def read_document_from(filename):
-        with codecs.open(filename, 'r', encoding='utf-8') as f:
-            markdown_text = f.read()
-        parser = Parser(markdown_text)
-        document = parser.parse_document()
-        document.filename = filename
-        return document
-
     def write(s):
         print(s.encode('utf-8'))
 
@@ -142,16 +143,7 @@ def main(args):
         from feedmark.checkers import Schema
         schema_document = read_document_from(options.check_against_schema)
         schema = Schema(schema_document)
-        results = []
-        for document in documents:
-            for section in document.sections:
-                result = schema.check(section)
-                if result:
-                    results.append({
-                        'section': section.title,
-                        'document': document.title,
-                        'result': result
-                    })
+        results = schema.check_documents([document])
         if results:
             write(json.dumps(results, indent=4, sort_keys=True))
             sys.exit(1)

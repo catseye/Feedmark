@@ -38,6 +38,19 @@ class Schema(object):
                 results.append(['missing', key])
         return results
 
+    def check_documents(self, documents):
+        results = []
+        for document in documents:
+            for section in document.sections:
+                result = self.check(section)
+                if result:
+                    results.append({
+                        'section': section.title,
+                        'document': document.title,
+                        'result': result
+                    })
+        return results
+
     def get_property_priority_order(self):
         return self.property_priority_order
 
