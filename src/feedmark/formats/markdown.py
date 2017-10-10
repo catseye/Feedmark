@@ -79,11 +79,11 @@ def markdownize_properties(properties, property_priority_order):
 
 def markdownize_reference_links(reference_links):
     if not reference_links:
-        return ''
-    md = ''
-    md += '\n'
+        return u''
+    md = u''
+    md += u'\n'
     for name, url in reference_links:
-        md += '[{}]: {}\n'.format(name, url)
+        md += u'[{}]: {}\n'.format(name, url)
     return md
 
 
