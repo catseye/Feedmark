@@ -116,13 +116,17 @@ def main(args):
             input_refdexes.append(input_refdex.strip())
 
     for input_refdex in input_refdexes:
-        with codecs.open(input_refdex, 'r', encoding='utf-8') as f:
-            local_refdex = json.loads(f.read())
-            if options.input_refdex_filename_prefix:
-                for key, value in local_refdex.iteritems():
-                    if 'filename' in value:
-                        value['filename'] = options.input_refdex_filename_prefix + value['filename']
-            refdex.update(local_refdex)
+        try:
+            with codecs.open(input_refdex, 'r', encoding='utf-8') as f:
+                local_refdex = json.loads(f.read())
+                if options.input_refdex_filename_prefix:
+                    for key, value in local_refdex.iteritems():
+                        if 'filename' in value:
+                            value['filename'] = options.input_refdex_filename_prefix + value['filename']
+                refdex.update(local_refdex)
+        except:
+            sys.stderr.write("Could not read refdex JSON from '{}'\n".format(input_refdex))
+            raise
 
     ### processing
 
@@ -170,7 +174,15 @@ def main(args):
             if name in refdex:
                 entry = refdex[name]
                 if 'filename' in entry and 'anchor' in entry:
-                    url = '{}#{}'.format(quote(entry['filename']), quote(entry['anchor']))
+                    try:
+                        filename = entry['filename'].decode('utf-8')
+                        filename = quote(filename.encode('utf-8'))
+                        anchor = entry['anchor'].decode('utf-8')
+                        anchor = quote(anchor.encode('utf-8'))
+                    except:
+                        sys.stderr.write(repr(entry))
+                        raise
+                    url = u'{}#{}'.format(filename, anchor)
                 elif 'url' in entry:
                     url = entry['url']
                 else:
