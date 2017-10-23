@@ -170,7 +170,11 @@ def main(args):
         from urllib import quote
 
         new_reference_links = []
+        seen_names = set()
         for (name, url) in reference_links:
+            if name in seen_names:
+                continue
+            seen_names.add(name)
             if name in refdex:
                 entry = refdex[name]
                 if 'filename' in entry and 'anchor' in entry:
