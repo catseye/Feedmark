@@ -128,6 +128,25 @@ def main(args):
             sys.stderr.write("Could not read refdex JSON from '{}'\n".format(input_refdex))
             raise
 
+    for key, value in refdex.iteritems():
+        try:
+            assert isinstance(key, unicode)
+            if 'url' in value:
+                assert len(value) == 1
+                assert isinstance(value['url'], unicode)
+                value['url'].encode('utf-8')
+            elif 'filename' in value and 'anchor' in value:
+                assert len(value) == 2
+                assert isinstance(value['filename'], unicode)
+                value['filename'].encode('utf-8')
+                assert isinstance(value['anchor'], unicode)
+                value['anchor'].encode('utf-8')
+            else:
+                raise NotImplementedError("badly formed refdex")
+        except:
+            sys.stderr.write("Component of refdex not suitable: '{}: {}'\n".format(repr(key), repr(value)))
+            raise
+
     ### processing
 
     if options.check_for_nodes:
@@ -179,10 +198,8 @@ def main(args):
                 entry = refdex[name]
                 if 'filename' in entry and 'anchor' in entry:
                     try:
-                        filename = entry['filename'].decode('utf-8')
-                        filename = quote(filename.encode('utf-8'))
-                        anchor = entry['anchor'].decode('utf-8')
-                        anchor = quote(anchor.encode('utf-8'))
+                        filename = quote(entry['filename'].encode('utf-8'))
+                        anchor = quote(entry['anchor'].encode('utf-8'))
                     except:
                         sys.stderr.write(repr(entry))
                         raise
