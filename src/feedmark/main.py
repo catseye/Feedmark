@@ -242,12 +242,14 @@ def main(args):
             document_json = {
                 'title': document.title,
                 'properties': document.properties,
+                'preamble': document.preamble,
             }
             for section in document.sections:
                 section_json = {
                     'title': section.title,
                     'images': section.images,
                     'properties': section.properties,
+                    'body': section.body,
                 }
                 document_json[section.title] = section_json
             output_json[document.title] = document_json
