@@ -48,9 +48,6 @@ def main(args):
         help='Check if entries have the properties specified by this schema.  This schema will '
              'also provide hints (such as ordering of properties) when outputting Markdown or HTML.'
     )
-    argparser.add_argument('--check-for-nodes', action='store_true',
-        help='Check if entries contain any Chrysoberyl-style links to nodes'
-    )
 
     argparser.add_argument('--output-atom', metavar='FILENAME', type=str,
         help='Construct an Atom XML feed from the entries and write it out to this file'
@@ -148,13 +145,6 @@ def main(args):
             raise
 
     ### processing
-
-    if options.check_for_nodes:
-        from feedmark.checkers import check_for_nodes
-        result = check_for_nodes(documents)
-        if result:
-            write(json.dumps(result, indent=4, sort_keys=True))
-            sys.exit(1)
 
     if options.check_links or options.archive_links_to is not None:
         from feedmark.checkers import archive_links

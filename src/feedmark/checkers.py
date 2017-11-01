@@ -142,23 +142,3 @@ def archive_links(documents, dest_dir):
         if delay_between_fetches > 0:
             sleep(delay_between_fetches)
     return failures
-
-
-def accumulate_links(text, links):
-    for match in re.finditer(r'\[\[(.*?)\]\]', text):
-        link = match.group(1)
-        segments = link.split('|')
-        if len(segments) > 1:
-            links[segments[0]] = segments[1]
-        else:
-            links[link] = link
-
-
-def check_for_nodes(documents):
-    links = {}
-    for document in documents:
-        accumulate_links('\n'.join(document.preamble), links)
-        for section in document.sections:
-            accumulate_links(section.body, links)
-    return links
-
