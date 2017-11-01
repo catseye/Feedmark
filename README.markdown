@@ -82,17 +82,18 @@ Note that this facility is still under development.
 
 ### Write out to miscellaneous formats
 
-Output entries as JSON, indexed by entry, or by property.
+Output entries as JSON, indexed by entry, or by property, or by
+publication date
 
     bin/feedmark --dump-entries eg/*.md
     bin/feedmark --by-property eg/*.md
+    bin/feedmark --by-publication-date eg/*.md
 
-Output entries as Markdown, or HTML.  Or lightly processed as a
-snippet of HTML or a Markdown Table of Contents.
+Output entries as Markdown, or HTML, or lightly processed into
+a Markdown Table of Contents.
 
     bin/feedmark --output-markdown eg/*.md
     bin/feedmark --output-html eg/*.md
-    bin/feedmark --output-html-snippet eg/*.md
     bin/feedmark --output-toc eg/*.md
 
 Motivation

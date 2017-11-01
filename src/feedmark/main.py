@@ -61,9 +61,6 @@ def main(args):
     argparser.add_argument('--output-html', action='store_true',
         help='Construct an HTML5 article element from the entries and write it to stdout'
     )
-    argparser.add_argument('--output-html-snippet', action='store_true',
-        help='Construct a snippet of HTML from the entries and write it to stdout'
-    )
     argparser.add_argument('--output-toc', action='store_true',
         help='Construct a Markdown Table of Contents from the entries and write it to stdout'
     )
@@ -249,6 +246,8 @@ def main(args):
         write(json.dumps(output_json, indent=4, sort_keys=True))
 
     if options.by_publication_date:
+        from feedmark.feeds import construct_entry_url
+
         items = []
         for document in documents:
             for section in document.sections:
@@ -257,6 +256,7 @@ def main(args):
                     'images': section.images,
                     'properties': section.properties,
                     'body': section.body,
+                    'url': construct_entry_url(section)
                 }
                 items.append((section.publication_date, section_json))
         items.sort(reverse=True)
@@ -299,11 +299,6 @@ def main(args):
         for document in documents:
             s = feedmark_htmlize(document, schema=schema)
             write(s)
-
-    if options.output_html_snippet:
-        from feedmark.formats.markdown import feedmark_htmlize_snippet
-        s = feedmark_htmlize_snippet(documents, limit=options.limit)
-        write(s)
 
     if options.output_toc:
         for document in documents:
