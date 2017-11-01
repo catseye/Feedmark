@@ -28,6 +28,9 @@ def main(args):
     argparser.add_argument('--by-property', action='store_true',
         help='Output JSON containing a list of all properties found and the entries they were found on'
     )
+    argparser.add_argument('--by-publication-date', action='store_true',
+        help='Output JSON list of the embdedded entries, sorted by publication date'
+    )
     argparser.add_argument('--dump-entries', action='store_true',
         help='Output indented summary of the entries on standard output'
     )
@@ -243,6 +246,23 @@ def main(args):
                 }
                 document_json[section.title] = section_json
             output_json[document.title] = document_json
+        write(json.dumps(output_json, indent=4, sort_keys=True))
+
+    if options.by_publication_date:
+        items = []
+        for document in documents:
+            for section in document.sections:
+                section_json = {
+                    'title': section.title,
+                    'images': section.images,
+                    'properties': section.properties,
+                    'body': section.body,
+                }
+                items.append((section.publication_date, section_json))
+        items.sort(reverse=True)
+        if options.limit:
+            items = items[:options.limit]
+        output_json = [item for (d, item) in items]
         write(json.dumps(output_json, indent=4, sort_keys=True))
 
     if options.by_property:
