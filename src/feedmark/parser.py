@@ -1,7 +1,19 @@
 #!/usr/bin/env python
+# encoding: UTF-8
 
 from datetime import datetime
 import re
+
+
+def anchor_for(title):
+    """`title` should be a Unicode.  Return value is UTF-8 encoded.
+
+    >>> anchor_for(u'3×C(21,3)+2×C(215,2)=50000: The Novel')
+    '3c2132c215250000-the-novel'
+
+    """
+    title = re.sub(ur"[':,.!()+×=]", u'', title)
+    return (title.replace(u' ', u'-').lower()).encode('utf-8')
 
 
 class Document(object):
@@ -56,8 +68,7 @@ class Section(object):
 
     @property
     def anchor(self):
-        title = re.sub(r"[':,.!]", '', self.title)
-        return (title.replace(u' ', u'-').lower()).encode('utf-8')
+        return anchor_for(self.title)
 
 
 class Parser(object):
@@ -193,3 +204,8 @@ class Parser(object):
                     reference_links.append((match.group(1), match.group(2)))
             self.scan()
         return (lines, reference_links)
+
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()

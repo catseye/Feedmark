@@ -1,11 +1,21 @@
 from argparse import ArgumentParser
 import codecs
 import json
+import re
 import sys
+import urllib
 
-from feedmark.atomizer import feedmark_atomize
 from feedmark.feeds import extract_sections
 from feedmark.parser import Parser
+
+
+def read_document_from(filename):
+    with codecs.open(filename, 'r', encoding='utf-8') as f:
+        markdown_text = f.read()
+    parser = Parser(markdown_text)
+    document = parser.parse_document()
+    document.filename = filename
+    return document
 
 
 def main(args):
@@ -18,10 +28,19 @@ def main(args):
     argparser.add_argument('--by-property', action='store_true',
         help='Output JSON containing a list of all properties found and the entries they were found on'
     )
+    argparser.add_argument('--by-publication-date', action='store_true',
+        help='Output JSON list of the embdedded entries, sorted by publication date'
+    )
     argparser.add_argument('--dump-entries', action='store_true',
-        help='Display a summary of the entries on standard output'
+        help='Output indented summary of the entries on standard output'
+    )
+    argparser.add_argument('--output-json', action='store_true',
+        help='Output JSON containing entries on standard output'
     )
 
+    argparser.add_argument('--output-links', action='store_true',
+        help='Output JSON containing all web links extracted from the entries'
+    )
     argparser.add_argument('--archive-links-to', metavar='DIRNAME', type=str, default=None,
         help='Download a copy of all web objects linked to from the entries'
     )
@@ -42,8 +61,11 @@ def main(args):
     argparser.add_argument('--output-html', action='store_true',
         help='Construct an HTML5 article element from the entries and write it to stdout'
     )
-    argparser.add_argument('--output-html-snippet', action='store_true',
-        help='Construct a snippet of HTML from the entries and write it to stdout'
+    argparser.add_argument('--output-toc', action='store_true',
+        help='Construct a Markdown Table of Contents from the entries and write it to stdout'
+    )
+    argparser.add_argument('--include-section-count', action='store_true',
+        help='When creating a ToC, display the count of contained sections alongside each document'
     )
 
     argparser.add_argument('--rewrite-markdown', action='store_true',
@@ -53,8 +75,14 @@ def main(args):
     argparser.add_argument('--input-refdex', metavar='FILENAME', type=str,
         help='Load this JSON file as the reference-style links index before processing'
     )
+    argparser.add_argument('--input-refdexes', metavar='FILENAME', type=str,
+        help='Load these JSON files as the reference-style links index before processing'
+    )
     argparser.add_argument('--output-refdex', action='store_true',
         help='Construct reference-style links index from the entries and write it to stdout as JSON'
+    )
+    argparser.add_argument('--input-refdex-filename-prefix', type=str, default=None,
+        help='After loading refdexes, prepend this to filename of each refdex'
     )
 
     argparser.add_argument('--limit', metavar='COUNT', type=int, default=None,
@@ -67,14 +95,6 @@ def main(args):
 
     ### helpers
 
-    def read_document_from(filename):
-        with codecs.open(filename, 'r', encoding='utf-8') as f:
-            markdown_text = f.read()
-        parser = Parser(markdown_text)
-        document = parser.parse_document()
-        document.filename = filename
-        return document
-
     def write(s):
         print(s.encode('utf-8'))
 
@@ -85,9 +105,44 @@ def main(args):
         documents.append(document)
 
     refdex = {}
+    input_refdexes = []
     if options.input_refdex:
-        with codecs.open(options.input_refdex, 'r', encoding='utf-8') as f:
-            refdex = json.loads(f.read())
+        input_refdexes.append(options.input_refdex)
+    if options.input_refdexes:
+        for input_refdex in options.input_refdexes.split(','):
+            input_refdexes.append(input_refdex.strip())
+
+    for input_refdex in input_refdexes:
+        try:
+            with codecs.open(input_refdex, 'r', encoding='utf-8') as f:
+                local_refdex = json.loads(f.read())
+                if options.input_refdex_filename_prefix:
+                    for key, value in local_refdex.iteritems():
+                        if 'filename' in value:
+                            value['filename'] = options.input_refdex_filename_prefix + value['filename']
+                refdex.update(local_refdex)
+        except:
+            sys.stderr.write("Could not read refdex JSON from '{}'\n".format(input_refdex))
+            raise
+
+    for key, value in refdex.iteritems():
+        try:
+            assert isinstance(key, unicode)
+            if 'url' in value:
+                assert len(value) == 1
+                assert isinstance(value['url'], unicode)
+                value['url'].encode('utf-8')
+            elif 'filename' in value and 'anchor' in value:
+                assert len(value) == 2
+                assert isinstance(value['filename'], unicode)
+                value['filename'].encode('utf-8')
+                assert isinstance(value['anchor'], unicode)
+                value['anchor'].encode('utf-8')
+            else:
+                raise NotImplementedError("badly formed refdex")
+        except:
+            sys.stderr.write("Component of refdex not suitable: '{}: {}'\n".format(repr(key), repr(value)))
+            raise
 
     ### processing
 
@@ -101,16 +156,7 @@ def main(args):
         from feedmark.checkers import Schema
         schema_document = read_document_from(options.check_against_schema)
         schema = Schema(schema_document)
-        results = []
-        for document in documents:
-            for section in document.sections:
-                result = schema.check(section)
-                if result:
-                    results.append({
-                        'section': section.title,
-                        'document': document.title,
-                        'result': result
-                    })
+        results = schema.check_documents([document])
         if results:
             write(json.dumps(results, indent=4, sort_keys=True))
             sys.exit(1)
@@ -133,9 +179,25 @@ def main(args):
         from urllib import quote
 
         new_reference_links = []
+        seen_names = set()
         for (name, url) in reference_links:
+            if name in seen_names:
+                continue
+            seen_names.add(name)
             if name in refdex:
-                url = '{}#{}'.format(quote(refdex[name]['filename']), quote(refdex[name]['anchor']))
+                entry = refdex[name]
+                if 'filename' in entry and 'anchor' in entry:
+                    try:
+                        filename = quote(entry['filename'].encode('utf-8'))
+                        anchor = quote(entry['anchor'].encode('utf-8'))
+                    except:
+                        sys.stderr.write(repr(entry))
+                        raise
+                    url = u'{}#{}'.format(filename, anchor)
+                elif 'url' in entry:
+                    url = entry['url']
+                else:
+                    raise ValueError("Badly formed refdex entry: {}".format(json.dumps(entry)))
             new_reference_links.append((name, url))
         return new_reference_links
 
@@ -164,6 +226,45 @@ def main(args):
                     else:
                         write(u'    {}: {}'.format(key, value))
 
+    if options.output_json:
+        output_json = {}
+        for document in documents:
+            document_json = {
+                'title': document.title,
+                'properties': document.properties,
+                'preamble': document.preamble,
+            }
+            for section in document.sections:
+                section_json = {
+                    'title': section.title,
+                    'images': section.images,
+                    'properties': section.properties,
+                    'body': section.body,
+                }
+                document_json[section.title] = section_json
+            output_json[document.title] = document_json
+        write(json.dumps(output_json, indent=4, sort_keys=True))
+
+    if options.by_publication_date:
+        from feedmark.feeds import construct_entry_url
+
+        items = []
+        for document in documents:
+            for section in document.sections:
+                section_json = {
+                    'title': section.title,
+                    'images': section.images,
+                    'properties': section.properties,
+                    'body': section.body,
+                    'url': construct_entry_url(section)
+                }
+                items.append((section.publication_date, section_json))
+        items.sort(reverse=True)
+        if options.limit:
+            items = items[:options.limit]
+        output_json = [item for (d, item) in items]
+        write(json.dumps(output_json, indent=4, sort_keys=True))
+
     if options.by_property:
         by_property = {}
         for document in documents:
@@ -174,31 +275,56 @@ def main(args):
                     by_property.setdefault(key, {}).setdefault(section.title, value)
         write(json.dumps(by_property, indent=4))
 
+    if options.output_links:
+        from feedmark.checkers import extract_links_from_documents
+        links = extract_links_from_documents(documents)
+        jsonable_links = [(url, section.title) for (url, section) in links]
+        write(json.dumps(jsonable_links, indent=4, sort_keys=True))
+
     if options.output_markdown:
-        from feedmark.htmlizer import feedmark_markdownize
+        from feedmark.formats.markdown import feedmark_markdownize
         for document in documents:
             s = feedmark_markdownize(document, schema=schema)
             write(s)
 
     if options.rewrite_markdown:
-        from feedmark.htmlizer import feedmark_markdownize
+        from feedmark.formats.markdown import feedmark_markdownize
         for document in documents:
             s = feedmark_markdownize(document, schema=schema)
             with open(document.filename, 'w') as f:
                 f.write(s.encode('UTF-8'))
 
     if options.output_html:
-        from feedmark.htmlizer import feedmark_htmlize
+        from feedmark.formats.markdown import feedmark_htmlize
         for document in documents:
             s = feedmark_htmlize(document, schema=schema)
             write(s)
 
-    if options.output_html_snippet:
-        from feedmark.htmlizer import feedmark_htmlize_snippet
-        s = feedmark_htmlize_snippet(documents, limit=options.limit)
-        write(s)
+    if options.output_toc:
+        for document in documents:
+            filename = document.filename
+            if ' ' in filename:
+                filename = urllib.quote(filename)
+
+            signs = []
+            section_count = len(document.sections)
+            if options.include_section_count and section_count > 1:
+                signs.append('({})'.format(section_count))
+
+            if document.properties.get('status') == 'under construction':
+                signs.append('*(U)*')
+            elif document.properties.get('publication-date'):
+                pubdate = document.properties['publication-date']
+                match = re.search(r'(\w+\s+\d\d\d\d)', pubdate)
+                if match:
+                    pubdate = match.group(1)
+                signs.append('({})'.format(pubdate))
+
+            line = "*   [{}]({}) {}".format(document.title, filename, ' '.join(signs))
+            write(line)
 
     if options.output_atom:
+        from feedmark.formats.atom import feedmark_atomize
         feedmark_atomize(documents, options.output_atom, limit=options.limit)
 
 

@@ -17,6 +17,7 @@ Fusce sed varius diam. Mauris massa lorem, fermentum et faucibus id, luctus susc
 ### A Possible Llama Under the Bridge
 
 *   date: Dec 15 2016 23:59:59
+*   reporter: Gregor Samsa
 
 Possibly there was a llama under the bridge.  More likely there wasn't.
 

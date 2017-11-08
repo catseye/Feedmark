@@ -1,44 +1,21 @@
+from __future__ import absolute_import
+
 from datetime import datetime
 import re
 
-import markdown
+from bs4 import BeautifulSoup, Tag
+from markdown import markdown
 
-from feedmark.feeds import extract_sections, construct_entry_url
-
-
-def strip_outer_p(text):
-    match = re.match(r'^\s*\<p\>\s*(.*?)\s*\<\/p\>\s*$', text, re.DOTALL)
-    if match:
-        return match.group(1)
-    return text
+from feedmark.parser import anchor_for
 
 
-def render_section_snippet(section):
-    date = section.publication_date.strftime('%b %-d, %Y')
-    if 'summary' in section.properties:
-        summary = strip_outer_p(markdown.markdown(section.properties['summary']))
-    else:
-        summary = section.title
-    url = construct_entry_url(section)
-    read_more = ''
-    if url is not None:
-        read_more = '<a href="{}">Read more...</a>'.format(url)
-    return '{}: {} {}'.format(date, summary, read_more)
-
-
-def feedmark_htmlize_snippet(documents, limit=None):
-    properties = {}
-
-    sections = extract_sections(documents)
-    s = ''
-    s += u'<ul>'
-    for (n, section) in enumerate(sections):
-        if limit is not None and n >= limit:
-            break
-        s += u'<li>{}</li>\n'.format(render_section_snippet(section))
-    s += u'</ul>'
-
-    return s
+def markdown_to_html5(text):
+    """Canonical function used within `feedmark` to convert Markdown text to a HTML5 snippet."""
+    html_text = markdown(text)
+    soup = BeautifulSoup(html_text, 'html.parser')
+    for tag in soup.find_all('h3'):
+        tag['id'] = anchor_for(tag.get_text()).decode('utf-8')
+    return unicode(soup)
 
 
 def items_in_priority_order(di, priority):
@@ -66,11 +43,11 @@ def markdownize_properties(properties, property_priority_order):
 
 def markdownize_reference_links(reference_links):
     if not reference_links:
-        return ''
-    md = ''
-    md += '\n'
+        return u''
+    md = u''
+    md += u'\n'
     for name, url in reference_links:
-        md += '[{}]: {}\n'.format(name, url)
+        md += u'[{}]: {}\n'.format(name, url)
     return md
 
 
@@ -98,4 +75,4 @@ def feedmark_markdownize(document, schema=None):
 
 
 def feedmark_htmlize(document, *args, **kwargs):
-    return markdown.markdown(feedmark_markdownize(document, *args, **kwargs))
+    return markdown_to_html5(feedmark_markdownize(document, *args, **kwargs))

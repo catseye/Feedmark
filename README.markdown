@@ -1,7 +1,7 @@
 Feedmark
 ========
 
-*Version 0.2.  Subject to change in backwards-incompatible ways without notice.*
+*Version 0.3.  Subject to change in backwards-incompatible ways without notice.*
 
 Feedmark is a format for embedding entities in Markdown files with
 accompanying metadata in a way which is both human-readable and
@@ -50,20 +50,18 @@ make `HEAD` requests and will not save any of the responses.
 A Feedmark schema is simply another Feedmark document, one in which
 each entry describes a property that entries should have.
 
-    bin/feedmark eg/Video\ games.md --check-against=eg/Video\ games\ schema.md
+    bin/feedmark eg/*Sightings*.md --check-against=eg/schema/Llama\ sighting.md
 
 Note that this facility is still under development.
 
 ### Rewrite documents in-place
 
 They will be parsed as Feedmark, and then output as Markdown, to the
-same files that were read in as input.  (This is destructive, but it
-is recommended that the original files be under version control such
+same files that were read in as input.  (Note!  This is destructive;
+it is recommended that the original files be under version control such
 as `git`, which will easily allow the changes to be reverted.)
 
     bin/feedmark --rewrite-markdown eg/*.md
-
-Note that this facility is still under development.
 
 ### Interlink documents
 
@@ -78,20 +76,21 @@ entry exists, since it may exist in multiple, or be moved over time.
     bin/feedmark eg/*.md --output-refdex >refdex.json
     bin/feedmark --input-refdex=refdex.json --rewrite-markdown eg/*.md
 
-Note that this facility is still under development.
-
 ### Write out to miscellaneous formats
 
-Output entries as JSON, indexed by entry, or by property.
+Output entries as JSON, indexed by entry, or by property, or by
+publication date
 
-    bin/feedmark --dump-entries eg/*.md
+    bin/feedmark --output-json eg/*.md
     bin/feedmark --by-property eg/*.md
+    bin/feedmark --by-publication-date eg/*.md
 
-Output entries as Markdown, or HTML, or a snippet of HTML
+Output entries as Markdown, or HTML, or lightly processed into
+a Markdown Table of Contents.
 
     bin/feedmark --output-markdown eg/*.md
     bin/feedmark --output-html eg/*.md
-    bin/feedmark --output-html-snippet eg/*.md
+    bin/feedmark --output-toc eg/*.md
 
 Motivation
 ----------
@@ -109,6 +108,14 @@ file, which is nice.
 
 TODO
 ----
+
+Document "preamble" should be formatted like section "body"
+(one big string, not list of strings.)
+
+Speed up canonical HTML5 creation by building a Markdown plugin
+to do what is currently done by BeautifulSoup.
+
+Handle redirects (302, 303) better when archiving external links.
 
 "common" properties on document which all entries within inherit.
 
