@@ -88,13 +88,13 @@ def extract_links_from_documents(documents):
 
 
 def url_to_dirname_and_filename(url):
-    parts = url.split('/')
+    parts = url.split(u'/')
     parts = parts[2:]
     domain_name = parts[0]
     domain_name = urllib.quote_plus(domain_name)
     parts = parts[1:]
-    filename = '/'.join(parts)
-    filename = urllib.quote_plus(filename)
+    filename = u'/'.join(parts)
+    filename = urllib.quote_plus(filename.encode('utf-8'))
     if not filename:
         filename = 'index.html'
     return (domain_name, filename)
