@@ -1,8 +1,9 @@
 from __future__ import absolute_import
 
+import hashlib
 import os
 import re
-from time import sleep
+from time import sleep, localtime, strftime
 import urllib
 
 from bs4 import BeautifulSoup
@@ -99,13 +100,37 @@ def url_to_dirname_and_filename(url):
     return (domain_name, filename)
 
 
-def download(url, filename):
+def compute_hash(filename):
+    collector = hashlib.sha1()
+    with open(filename, 'rb') as f:
+        while True:
+            data = f.read(1024)
+            if not data:
+                break
+            collector.update(data)
+    return collector.hexdigest()
+
+
+def download(url, dirname, filename):
     response = requests.get(url, stream=True)
-    part_filename = filename + '_part'
-    with open(part_filename, "wb") as f:
+    partname = os.path.join(dirname, filename + '_part')
+    with open(partname, "wb") as f:
         for data in response.iter_content():
             f.write(data)
-    os.rename(part_filename, filename)
+    destname = os.path.join(dirname, filename)
+    if os.path.exists(destname):
+        desthash = compute_hash(destname)
+        parthash = compute_hash(partname)
+        if desthash == parthash:
+            os.unlink(partname)
+        else:
+            mtime = os.path.getmtime(destname)
+            timestring = strftime('%Y.%m%d.%H%M%S', localtime(mtime))
+            archname = '{}_REV{}'.format(destname, timestring)
+            os.rename(destname, archname)
+            os.rename(partname, destname)
+    else:
+        os.rename(partname, destname)
     return response
 
 
@@ -126,8 +151,7 @@ def archive_links(documents, dest_dir):
                 dirname = os.path.join(dest_dir, dirname)
                 if not os.path.exists(dirname):
                     os.makedirs(dirname)
-                filename = os.path.join(dirname, filename)
-                response = download(url, filename)
+                response = download(url, dirname, filename)
             else:
                 response = requests.head(url)
             status = response.status_code

@@ -1,7 +1,7 @@
 Feedmark
 ========
 
-*Version 0.3.  Subject to change in backwards-incompatible ways without notice.*
+*Version 0.4-PRE.  Subject to change in backwards-incompatible ways without notice.*
 
 Feedmark is a format for embedding entities in Markdown files with
 accompanying metadata in a way which is both human-readable and
