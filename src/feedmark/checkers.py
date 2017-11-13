@@ -137,16 +137,26 @@ def download(url, dirname, filename):
 delay_between_fetches = 0
 
 
-def archive_links(documents, dest_dir):
+def archive_links(documents, article_root, dest_dir):
     """If dest_dir is None, links will only be checked for existence, not downloaded."""
     links = extract_links_from_documents(documents)
 
     failures = []
     for url, section in tqdm(links, total=len(links)):
         try:
-            if not url.startswith(('http://', 'https://')):
-                raise ValueError('Not http: {}'.format(url))
-            if dest_dir is not None:
+            if url.startswith(('#',)):
+                continue
+            elif not url.startswith(('http://', 'https://')):
+                if '#' in url:
+                    filename, anchor = url.split('#')
+                else:
+                    filename, anchor = url, ""
+                filename = urllib.unquote(filename)
+                filename = os.path.join(article_root, filename)
+                if not os.path.exists(filename):
+                    raise ValueError('Local file "{}" does not exist'.format(filename))
+                continue
+            elif dest_dir is not None:
                 dirname, filename = url_to_dirname_and_filename(url)
                 dirname = os.path.join(dest_dir, dirname)
                 if not os.path.exists(dirname):

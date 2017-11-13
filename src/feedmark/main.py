@@ -47,6 +47,10 @@ def main(args):
     argparser.add_argument('--check-links', action='store_true',
         help='Check if web objects linked to from the entries exist'
     )
+    argparser.add_argument('--article-root', metavar='DIRNAME', type=str, default='.',
+        help='Directory in which local files found when checking or archiving links should be located'
+    )
+
     argparser.add_argument('--check-against-schema', metavar='FILENAME', type=str, default=None,
         help='Check if entries have the properties specified by this schema.  This schema will '
              'also provide hints (such as ordering of properties) when outputting Markdown or HTML.'
@@ -148,7 +152,7 @@ def main(args):
 
     if options.check_links or options.archive_links_to is not None:
         from feedmark.checkers import archive_links
-        result = archive_links(documents, options.archive_links_to)
+        result = archive_links(documents, options.article_root, options.archive_links_to)
         write(json.dumps(result, indent=4, sort_keys=True))
 
     schema = None
