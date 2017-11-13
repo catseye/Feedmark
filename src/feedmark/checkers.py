@@ -137,7 +137,7 @@ def download(url, dirname, filename):
 delay_between_fetches = 0
 
 
-def archive_links(documents, article_root, dest_dir):
+def archive_links(documents, article_root=None, dest_dir=None, missing_only=False):
     """If dest_dir is None, links will only be checked for existence, not downloaded."""
     links = extract_links_from_documents(documents)
 
@@ -161,6 +161,8 @@ def archive_links(documents, article_root, dest_dir):
                 dirname = os.path.join(dest_dir, dirname)
                 if not os.path.exists(dirname):
                     os.makedirs(dirname)
+                if missing_only and os.path.exists(os.path.join(dirname, filename)):
+                    continue
                 response = download(url, dirname, filename)
             else:
                 response = requests.head(url)

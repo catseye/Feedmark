@@ -44,6 +44,9 @@ def main(args):
     argparser.add_argument('--archive-links-to', metavar='DIRNAME', type=str, default=None,
         help='Download a copy of all web objects linked to from the entries'
     )
+    argparser.add_argument('--archive-missing-only', action='store_true',
+        help='When archiving links, only download the link if it is not already archived'
+    )
     argparser.add_argument('--check-links', action='store_true',
         help='Check if web objects linked to from the entries exist'
     )
@@ -152,7 +155,12 @@ def main(args):
 
     if options.check_links or options.archive_links_to is not None:
         from feedmark.checkers import archive_links
-        result = archive_links(documents, options.article_root, options.archive_links_to)
+        result = archive_links(
+            documents,
+            article_root=options.article_root,
+            dest_dir=options.archive_links_to,
+            missing_only=options.archive_missing_only,
+        )
         write(json.dumps(result, indent=4, sort_keys=True))
 
     schema = None
