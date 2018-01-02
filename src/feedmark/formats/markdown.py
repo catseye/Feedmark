@@ -3,19 +3,36 @@ from __future__ import absolute_import
 from datetime import datetime
 import re
 
-from bs4 import BeautifulSoup, Tag
 from markdown import markdown
+from markdown.extensions import Extension
+from markdown.treeprocessors import Treeprocessor
 
 from feedmark.parser import anchor_for
 
 
+class AnchorBestower(Treeprocessor):
+    def run(self, root):
+        self.rewrite(root)
+
+    def rewrite(self, element):
+        if element.tag == 'h3':
+            element.set('id', anchor_for(element.text).decode('utf-8'))
+        else:
+            for child in element:
+                self.rewrite(child)
+
+
+class AnchorExtension(Extension):
+    def extendMarkdown(self, md, md_globals):
+        md.treeprocessors.add('bestow-anchors', AnchorBestower(), '>inline')
+
+
+anchor_extension = AnchorExtension()
+
+
 def markdown_to_html5(text):
     """Canonical function used within `feedmark` to convert Markdown text to a HTML5 snippet."""
-    html_text = markdown(text)
-    soup = BeautifulSoup(html_text, 'html.parser')
-    for tag in soup.find_all('h3'):
-        tag['id'] = anchor_for(tag.get_text()).decode('utf-8')
-    return unicode(soup)
+    return markdown(text, extensions=[anchor_extension])
 
 
 def items_in_priority_order(di, priority):
