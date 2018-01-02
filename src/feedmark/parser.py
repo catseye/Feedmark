@@ -21,6 +21,7 @@ class Document(object):
         self.title = title
         self.properties = {}
 
+        self.preamble = None
         self.sections = []
 
     def __str__(self):
@@ -110,8 +111,8 @@ class Parser(object):
         title = self.parse_title()
         document = Document(title)
         document.properties = self.parse_properties()
-        preamble, reference_links = self.parse_body()
-        document.preamble = preamble
+        lines, reference_links = self.parse_body()
+        document.preamble = u'\n'.join(lines)
         document.reference_links = reference_links
         while not self.eof():
             section = self.parse_section()

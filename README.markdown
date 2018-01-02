@@ -109,9 +109,6 @@ file, which is nice.
 TODO
 ----
 
-Document "preamble" should be formatted like section "body"
-(one big string, not list of strings.)
-
 Handle redirects (302, 303) better when archiving external links.
 
 "common" properties on document which all entries within inherit.

@@ -75,7 +75,7 @@ def feedmark_markdownize(document, schema=None):
 
     md = u'{}\n{}\n\n'.format(document.title, '=' * len(document.title))
     md += markdownize_properties(document.properties, property_priority_order)
-    md += u'\n'.join(document.preamble)
+    md += document.preamble
     md += markdownize_reference_links(document.reference_links)
     for section in document.sections:
         md += u'\n'
