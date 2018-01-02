@@ -12,7 +12,7 @@ def anchor_for(title):
     '3c2132c215250000-the-novel'
 
     """
-    title = re.sub(ur"[':,.!()+×=]", u'', title)
+    title = re.sub(ur"""['":,.!()+×=]""", u'', title)
     return (title.replace(u' ', u'-').lower()).encode('utf-8')
 
 
