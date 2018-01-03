@@ -4,9 +4,12 @@ History of Feedmark
 0.4
 ---
 
+*   Checking links now works for local files; it checks they are in
+    the directory specified as `--article-root`.
 *   Archiving targets of links is "more idempotent":
     *   if the file has not changed, it is not changed on disk
     *   if it has changed, the old file is renamed to a datestamped name
+    *   `--archive-missing-only` only downloads if not already have it
 *   Writing the anchor `id` of `h3` elements is now much faster, as it
     is now done with a Markdown extension instead of BeautifulSoup.
 *   `preamble` of a document is now formatted the same way as the `body`
