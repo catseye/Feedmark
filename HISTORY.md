@@ -17,8 +17,11 @@ History of Feedmark
 0.3
 ---
 
-*   `--input-refdexes`, `--input-refdex-filename-prefix`.
-*   `--output-json` and `--by-publication-date` and `--output-links`.
+*   Output JSON with `--output-json`.  Also `--by-publication-date`.
+*   Output links with `--output-links`.
+*   Multiple input refdexes can be read with `--input-refdexes`.
+*   A prefix can be virtually appended to every filename in the
+    input refdexes using `--input-refdex-filename-prefix`.
 *   Output a table of contents.
 *   Some internal refactoring.
 *   Rudimentary test suite.

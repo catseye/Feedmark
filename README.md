@@ -109,7 +109,7 @@ file, which is nice.
 TODO
 ----
 
-Handle redirects (302, 303) better when archiving external links.
+Handle redirects (301, 302) better when archiving external links.
 
 "common" properties on document which all entries within inherit.
 
