@@ -1,7 +1,7 @@
 Feedmark
 ========
 
-*Version 0.3.  Subject to change in backwards-incompatible ways without notice.*
+*Version 0.4.  Subject to change in backwards-incompatible ways without notice.*
 
 Feedmark is a format for embedding entities in Markdown files with
 accompanying metadata in a way which is both human-readable and
@@ -109,13 +109,7 @@ file, which is nice.
 TODO
 ----
 
-Document "preamble" should be formatted like section "body"
-(one big string, not list of strings.)
-
-Speed up canonical HTML5 creation by building a Markdown plugin
-to do what is currently done by BeautifulSoup.
-
-Handle redirects (302, 303) better when archiving external links.
+Handle redirects (301, 302) better when archiving external links.
 
 "common" properties on document which all entries within inherit.
 
