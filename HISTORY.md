@@ -4,6 +4,8 @@ History of Feedmark
 0.5
 ---
 
+*   Format of JSON written by `--output-json` cleaned up; documents
+    are given in a list, sections in a document are also in lists.
 *   Functionality for generating a table of contents has been removed.
     Example script that generates a ToC from `feedmark --output-json`
     is provided in the `eg` directory instead.

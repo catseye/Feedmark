@@ -10,10 +10,11 @@ import sys
 import urllib
 
 
-def generate_toc_line(filename, document):
-    # FIXME: the JSON that feedmark outputs should have an explicit 'sections' key containing sections.
-    sections = [(k, v) for k, v in document.iteritems() if k not in ('title', 'preamble', 'properties')]
-    properties = document.get('properties')
+def generate_toc_line(document):
+    title = document['title']
+    filename = urllib.quote(document['filename'])
+    sections = document.get('sections', [])
+    properties = document.get('properties', {})
 
     # You may wish to display some information after each entry in the ToC.  Here are some examples.
     signs = []
@@ -34,15 +35,14 @@ def generate_toc_line(filename, document):
             pubdate = match.group(1)
         signs.append('({})'.format(pubdate))
 
-    return "*   [{}]({}) {}\n".format(document['title'], urllib.quote(filename), ' '.join(signs))
+    return "*   [{}]({}) {}\n".format(title, filename, ' '.join(signs))
 
 
 def output_toc(filenames):
-    for filename in filenames:
-        data = json.loads(subprocess.check_output(["feedmark", "--output-json", filename]))
-        for title, document in data.iteritems():
-            line = generate_toc_line(filename, document)
-            sys.stdout.write(line)
+    data = json.loads(subprocess.check_output(["feedmark", "--output-json"] + filenames))
+    for document in data['documents']:
+        line = generate_toc_line(document)
+        sys.stdout.write(line)
 
 
 if __name__ == '__main__':

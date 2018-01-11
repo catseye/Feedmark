@@ -232,22 +232,25 @@ def main(args):
                         write(u'    {}: {}'.format(key, value))
 
     if options.output_json:
-        output_json = {}
+        output_json = {
+            'documents': []
+        }
         for document in documents:
             document_json = {
+                'filename': document.filename,
                 'title': document.title,
                 'properties': document.properties,
                 'preamble': document.preamble,
+                'sections': [],
             }
             for section in document.sections:
-                section_json = {
+                document_json['sections'].append({
                     'title': section.title,
                     'images': section.images,
                     'properties': section.properties,
                     'body': section.body,
-                }
-                document_json[section.title] = section_json
-            output_json[document.title] = document_json
+                })
+            output_json['documents'].append(document_json)
         write(json.dumps(output_json, indent=4, sort_keys=True))
 
     if options.by_publication_date:
