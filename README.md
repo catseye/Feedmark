@@ -1,7 +1,7 @@
 Feedmark
 ========
 
-*Version 0.4.  Subject to change in backwards-incompatible ways without notice.*
+*Version 0.5-PRE.  Subject to change in backwards-incompatible ways without notice.*
 
 Feedmark is a format for embedding entities in Markdown files with
 accompanying metadata in a way which is both human-readable and
@@ -85,12 +85,11 @@ publication date
     bin/feedmark --by-property eg/*.md
     bin/feedmark --by-publication-date eg/*.md
 
-Output entries as Markdown, or HTML, or lightly processed into
-a Markdown Table of Contents.
+Output entries as Markdown, or HTML.  In the latter case, `h3` headings
+will get `id` attributes which let them serve as link anchors.
 
     bin/feedmark --output-markdown eg/*.md
     bin/feedmark --output-html eg/*.md
-    bin/feedmark --output-toc eg/*.md
 
 Motivation
 ----------

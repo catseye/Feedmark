@@ -1,6 +1,13 @@
 History of Feedmark
 ===================
 
+0.5
+---
+
+*   Functionality for generating a table of contents has been removed.
+    Example script that generates a ToC from `feedmark --output-json`
+    is provided in the `eg` directory instead.
+
 0.4
 ---
 
