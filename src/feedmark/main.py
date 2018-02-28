@@ -3,7 +3,6 @@ import codecs
 import json
 import re
 import sys
-import urllib
 
 from feedmark.feeds import extract_sections
 from feedmark.parser import Parser
@@ -67,12 +66,6 @@ def main(args):
     )
     argparser.add_argument('--output-html', action='store_true',
         help='Construct an HTML5 article element from the entries and write it to stdout'
-    )
-    argparser.add_argument('--output-toc', action='store_true',
-        help='Construct a Markdown Table of Contents from the entries and write it to stdout'
-    )
-    argparser.add_argument('--include-section-count', action='store_true',
-        help='When creating a ToC, display the count of contained sections alongside each document'
     )
 
     argparser.add_argument('--rewrite-markdown', action='store_true',
@@ -239,22 +232,25 @@ def main(args):
                         write(u'    {}: {}'.format(key, value))
 
     if options.output_json:
-        output_json = {}
+        output_json = {
+            'documents': []
+        }
         for document in documents:
             document_json = {
+                'filename': document.filename,
                 'title': document.title,
                 'properties': document.properties,
                 'preamble': document.preamble,
+                'sections': [],
             }
             for section in document.sections:
-                section_json = {
+                document_json['sections'].append({
                     'title': section.title,
                     'images': section.images,
                     'properties': section.properties,
                     'body': section.body,
-                }
-                document_json[section.title] = section_json
-            output_json[document.title] = document_json
+                })
+            output_json['documents'].append(document_json)
         write(json.dumps(output_json, indent=4, sort_keys=True))
 
     if options.by_publication_date:
@@ -311,29 +307,6 @@ def main(args):
         for document in documents:
             s = feedmark_htmlize(document, schema=schema)
             write(s)
-
-    if options.output_toc:
-        for document in documents:
-            filename = document.filename
-            if ' ' in filename:
-                filename = urllib.quote(filename)
-
-            signs = []
-            section_count = len(document.sections)
-            if options.include_section_count and section_count > 1:
-                signs.append('({})'.format(section_count))
-
-            if document.properties.get('status') == 'under construction':
-                signs.append('*(U)*')
-            elif document.properties.get('publication-date'):
-                pubdate = document.properties['publication-date']
-                match = re.search(r'(\w+\s+\d\d\d\d)', pubdate)
-                if match:
-                    pubdate = match.group(1)
-                signs.append('({})'.format(pubdate))
-
-            line = "*   [{}]({}) {}".format(document.title, filename, ' '.join(signs))
-            write(line)
 
     if options.output_atom:
         from feedmark.formats.atom import feedmark_atomize
