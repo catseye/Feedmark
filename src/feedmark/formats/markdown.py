@@ -15,7 +15,7 @@ class AnchorBestower(Treeprocessor):
         self.rewrite(root)
 
     def rewrite(self, element):
-        if element.tag == 'h3':
+        if element.tag in ('h1', 'h2', 'h3', 'h4', 'h5', 'h6'):
             element.set('id', anchor_for(element.text).decode('utf-8'))
         else:
             for child in element:
