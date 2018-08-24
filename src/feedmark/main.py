@@ -286,7 +286,7 @@ def main(args):
     if options.output_links:
         from feedmark.checkers import extract_links_from_documents
         links = extract_links_from_documents(documents)
-        jsonable_links = [(url, section.title) for (url, section) in links]
+        jsonable_links = [(url, section.title if section else "(no section)") for (url, section) in links]
         write(json.dumps(jsonable_links, indent=4, sort_keys=True))
 
     if options.output_markdown:
