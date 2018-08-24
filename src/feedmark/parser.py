@@ -5,17 +5,6 @@ from datetime import datetime
 import re
 
 
-def anchor_for(title):
-    """`title` should be a Unicode.  Return value is UTF-8 encoded.
-
-    >>> anchor_for(u'3×C(21,3)+2×C(215,2)=50000: The Novel')
-    '3c2132c215250000-the-novel'
-
-    """
-    title = re.sub(ur"""['":,.!()+×=]""", u'', title)
-    return (title.replace(u' ', u'-').lower()).encode('utf-8')
-
-
 class Document(object):
     def __init__(self, title):
         self.title = title
@@ -69,7 +58,9 @@ class Section(object):
 
     @property
     def anchor(self):
-        return anchor_for(self.title)
+        from markdown.extensions.toc import slugify
+
+        return slugify(self.title, '-')
 
 
 class Parser(object):

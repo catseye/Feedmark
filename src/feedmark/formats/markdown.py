@@ -4,35 +4,11 @@ from datetime import datetime
 import re
 
 from markdown import markdown
-from markdown.extensions import Extension
-from markdown.treeprocessors import Treeprocessor
-
-from feedmark.parser import anchor_for
-
-
-class AnchorBestower(Treeprocessor):
-    def run(self, root):
-        self.rewrite(root)
-
-    def rewrite(self, element):
-        if element.tag in ('h1', 'h2', 'h3', 'h4', 'h5', 'h6'):
-            element.set('id', anchor_for(element.text).decode('utf-8'))
-        else:
-            for child in element:
-                self.rewrite(child)
-
-
-class AnchorExtension(Extension):
-    def extendMarkdown(self, md, md_globals):
-        md.treeprocessors.add('bestow-anchors', AnchorBestower(), '>inline')
-
-
-anchor_extension = AnchorExtension()
 
 
 def markdown_to_html5(text):
     """Canonical function used within `feedmark` to convert Markdown text to a HTML5 snippet."""
-    return markdown(text, extensions=[anchor_extension])
+    return markdown(text, extensions=['toc'])
 
 
 def items_in_priority_order(di, priority):
