@@ -1,7 +1,7 @@
 Feedmark
 ========
 
-*Version 0.5.  Subject to change in backwards-incompatible ways without notice.*
+*Version 0.6.  Subject to change in backwards-incompatible ways without notice.*
 
 Feedmark is a format for embedding entities in Markdown files with
 accompanying metadata in a way which is both human-readable and
@@ -17,7 +17,7 @@ immediately by the entity's "plaque", which is a bullet list
 where every item is prefixed by an identifier and a colon.
 
 Example Feedmark documents can be found in the `eg/` directory.
-Further examples can be found in [The Dossier][].
+Further examples can be found in [Chrysoberyl][] and [The Dossier][].
 
 Implementation
 --------------
@@ -121,4 +121,5 @@ Allow trailing `###` on h3-level headings.
 Index creation from refdex, for permalinks.
 
 [Falderal]: http://catseye.tc/node/Falderal
-[The Dossier]: https://github.com/catseye/The-Dossier/
+[Chrysoberyl]: http://git.catseye.tc/Chrysoberyl/
+[The Dossier]: http://git.catseye.tc/The-Dossier/

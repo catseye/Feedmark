@@ -1,6 +1,13 @@
 History of Feedmark
 ===================
 
+0.6
+---
+
+*   Uses the `toc` extension that ships with `markdown` to generate
+    heading-anchors (instead of a home-rolled function for that.)
+*   Heading anchors are generated on all header levels, not just `h3`.
+
 0.5
 ---
 
