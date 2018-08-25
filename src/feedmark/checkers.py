@@ -56,19 +56,35 @@ def extract_links(html_text):
 
 def extract_links_from_documents(documents):
     links = []
+
+    def make_link(url, section=None, **kwargs):
+        link = {
+            'url': url,
+        }
+        if section:
+            link.update({
+                'section': section.title,
+                'document': section.document.title,
+            })
+        link.update(kwargs)
+        return link
+
+    def extend_links(section, md):
+        links.extend([make_link(url, section=section) for url in extract_links(markdown_to_html5(md))])
+
     for document in documents:
         for name, url in document.reference_links:
-            links.append((url, None))
+            links.append(make_link(url, name=name))
         for section in document.sections:
             for (name, url) in section.images:
-                links.append((url, section))
+                links.append(make_link(url, section=section, name=name))
             for key, value in section.properties.iteritems():
                 if isinstance(value, list):
                     for subitem in value:
-                        links.extend([(url, section) for url in extract_links(markdown_to_html5(subitem))])
+                        extend_links(section, subitem)
                 else:
-                    links.extend([(url, section) for url in extract_links(markdown_to_html5(value))])
+                    extend_links(section, value)
             for name, url in section.reference_links:
-                links.append((url, section))
-            links.extend([(url, section) for url in extract_links(markdown_to_html5(section.body))])
+                links.append(make_link(url, section=section, name=name))
+            extend_links(section, section.body)
     return links
