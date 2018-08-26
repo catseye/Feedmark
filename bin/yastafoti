@@ -136,8 +136,11 @@ def main(args):
 
     links = []
     for filename in options.input_files:
-        with open(filename, 'r') as f:
-            data = json.loads(f.read())
+        if filename == '-':
+            data = json.loads(sys.stdin.read())
+        else:
+            with open(filename, 'r') as f:
+                data = json.loads(f.read())
         links.extend(data)
 
     result = archive_links(
