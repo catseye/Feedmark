@@ -74,7 +74,8 @@ def archive_links(links, article_root=None, dest_dir=None, missing_only=False):
     """If dest_dir is None, links will only be checked for existence, not downloaded."""
 
     failures = []
-    for url, section in tqdm(links, total=len(links)):
+    for link in tqdm(links, total=len(links)):
+        url = link['url']
         try:
             if url.startswith(('#',)):
                 continue
@@ -105,7 +106,7 @@ def archive_links(links, article_root=None, dest_dir=None, missing_only=False):
             failures.append({
                 'status': status,
                 'url': url,
-                'section': str(section)
+                'link': link,
             })
         if delay_between_fetches > 0:
             sleep(delay_between_fetches)
