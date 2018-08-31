@@ -1,7 +1,8 @@
 # Feed-related, but Atom-independent, functions.
 
 import re
-from urllib import quote_plus
+
+from feedmark.utils import quote_plus
 
 
 def construct_entry_url(section):

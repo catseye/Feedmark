@@ -6,6 +6,7 @@ import sys
 
 from feedmark.feeds import extract_sections
 from feedmark.parser import Parser
+from feedmark.utils import items
 
 
 def read_document_from(filename):
@@ -105,7 +106,7 @@ def main(args):
             with codecs.open(input_refdex, 'r', encoding='utf-8') as f:
                 local_refdex = json.loads(f.read())
                 if options.input_refdex_filename_prefix:
-                    for key, value in local_refdex.iteritems():
+                    for key, value in items(local_refdex):
                         if 'filename' in value:
                             value['filename'] = options.input_refdex_filename_prefix + value['filename']
                 refdex.update(local_refdex)
@@ -113,7 +114,7 @@ def main(args):
             sys.stderr.write("Could not read refdex JSON from '{}'\n".format(input_refdex))
             raise
 
-    for key, value in refdex.iteritems():
+    for key, value in items(refdex):
         try:
             assert isinstance(key, unicode)
             if 'url' in value:
@@ -201,7 +202,7 @@ def main(args):
                 write(section.title)
                 for (name, url) in section.images:
                     write(u'    !{}: {}'.format(name, url))
-                for key, value in section.properties.iteritems():
+                for key, value in items(section.properties):
                     if isinstance(value, list):
                         write(u'    {}@'.format(key))
                         for subitem in value:
@@ -234,7 +235,7 @@ def main(args):
     if options.by_publication_date:
         from feedmark.feeds import construct_entry_url
 
-        items = []
+        dated_items = []
         for document in documents:
             for section in document.sections:
                 section_json = {
@@ -244,18 +245,18 @@ def main(args):
                     'body': section.body,
                     'url': construct_entry_url(section)
                 }
-                items.append((section.publication_date, section_json))
-        items.sort(reverse=True)
+                dated_items.append((section.publication_date, section_json))
+        dated_items.sort(reverse=True)
         if options.limit:
-            items = items[:options.limit]
-        output_json = [item for (d, item) in items]
+            dated_items = dated_items[:options.limit]
+        output_json = [item for (d, item) in dated_items]
         write(json.dumps(output_json, indent=4, sort_keys=True))
 
     if options.by_property:
         by_property = {}
         for document in documents:
             for section in document.sections:
-                for key, value in section.properties.iteritems():
+                for key, value in items(section.properties):
                     if isinstance(value, list):
                         key = u'{}@'.format(key)
                     by_property.setdefault(key, {}).setdefault(section.title, value)

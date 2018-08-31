@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 
 from feedmark.formats.markdown import markdown_to_html5
+from feedmark.utils import items
 
 
 class Schema(object):
@@ -14,10 +15,10 @@ class Schema(object):
 
     def check(self, section):
         results = []
-        for key, value in section.properties.iteritems():
+        for key, value in items(section.properties):
             if key not in self.property_rules:
                 results.append(['extra', key])
-        for key, value in self.property_rules.iteritems():
+        for key, value in items(self.property_rules):
             optional = value.properties.get('optional', 'false') == 'true'
             if optional:
                 continue

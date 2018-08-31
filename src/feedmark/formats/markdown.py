@@ -5,19 +5,12 @@ import re
 
 from markdown import markdown
 
+from feedmark.utils import items_in_priority_order
+
 
 def markdown_to_html5(text):
     """Canonical function used within `feedmark` to convert Markdown text to a HTML5 snippet."""
     return markdown(text, extensions=['toc'])
-
-
-def items_in_priority_order(di, priority):
-    for key in priority:
-        if key in di:
-            yield key, di[key]
-    for key, item in sorted(di.iteritems()):
-        if key not in priority:
-            yield key, item
 
 
 def markdownize_properties(properties, property_priority_order):
