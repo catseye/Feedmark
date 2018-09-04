@@ -1,5 +1,12 @@
 #!/usr/bin/env python
 
+# Example: bin/yastafoti --archive-links-to=downloads eg/Recent\ Llama\ Sightings.md
+
+# If it is only desired that the links be checked, `--check-links` will
+# make `HEAD` requests and will not save any of the responses.
+
+# TODO: Handle redirects (301, 302) better when archiving external links.(?)
+
 from os.path import realpath, dirname, join
 import sys
 
