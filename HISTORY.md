@@ -11,7 +11,8 @@ History of Feedmark
     has changed.  Each link is a dictionary, includes more info.
 *   Able to output links that don't appear in any Feedmark section.
 *   Ability to archive targets of links has been split off into a
-    separate utility, which consumes the new link JSON format.
+    separate utility (called `yastasoti` and hosted in its own repo)
+    which consumes the new link JSON format.
 *   Tests pass when run under Python 3.
 
 0.5
