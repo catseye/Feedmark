@@ -5,6 +5,33 @@ from datetime import datetime
 import re
 
 
+def rewrite_reference_links(refdex, reference_links):
+    from urllib import quote
+
+    new_reference_links = []
+    seen_names = set()
+    for (name, url) in reference_links:
+        if name in seen_names:
+            continue
+        seen_names.add(name)
+        if name in refdex:
+            entry = refdex[name]
+            if 'filename' in entry and 'anchor' in entry:
+                try:
+                    filename = quote(entry['filename'].encode('utf-8'))
+                    anchor = quote(entry['anchor'].encode('utf-8'))
+                except:
+                    sys.stderr.write(repr(entry))
+                    raise
+                url = u'{}#{}'.format(filename, anchor)
+            elif 'url' in entry:
+                url = entry['url']
+            else:
+                raise ValueError("Badly formed refdex entry: {}".format(json.dumps(entry)))
+        new_reference_links.append((name, url))
+    return new_reference_links
+
+
 class Document(object):
     def __init__(self, title):
         self.title = title
@@ -15,6 +42,11 @@ class Document(object):
 
     def __str__(self):
         return "document '{}'".format(self.title.encode('utf-8'))
+
+    def rewrite_reference_links(self, refdex):
+        self.reference_links = rewrite_reference_links(refdex, self.reference_links)
+        for section in self.sections:
+            section.reference_links = rewrite_reference_links(refdex, section.reference_links)
 
 
 class Section(object):

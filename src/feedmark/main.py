@@ -116,37 +116,9 @@ def main(args):
 
     ### processing: rewrite references phase
 
-    def rewrite_reference_links(refdex, reference_links):
-        from urllib import quote
-
-        new_reference_links = []
-        seen_names = set()
-        for (name, url) in reference_links:
-            if name in seen_names:
-                continue
-            seen_names.add(name)
-            if name in refdex:
-                entry = refdex[name]
-                if 'filename' in entry and 'anchor' in entry:
-                    try:
-                        filename = quote(entry['filename'].encode('utf-8'))
-                        anchor = quote(entry['anchor'].encode('utf-8'))
-                    except:
-                        sys.stderr.write(repr(entry))
-                        raise
-                    url = u'{}#{}'.format(filename, anchor)
-                elif 'url' in entry:
-                    url = entry['url']
-                else:
-                    raise ValueError("Badly formed refdex entry: {}".format(json.dumps(entry)))
-            new_reference_links.append((name, url))
-        return new_reference_links
-
     if refdex:
         for document in documents:
-            document.reference_links = rewrite_reference_links(refdex, document.reference_links)
-            for section in document.sections:
-                section.reference_links = rewrite_reference_links(refdex, section.reference_links)
+            document.rewrite_reference_links(refdex)
 
     ### output
 
