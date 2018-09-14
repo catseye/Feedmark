@@ -1,21 +1,9 @@
 from argparse import ArgumentParser
-import codecs
 import json
-import re
 import sys
 
-from feedmark.feeds import extract_sections
-from feedmark.parser import Parser
+from feedmark.loader import read_document_from, read_refdex_from
 from feedmark.utils import items
-
-
-def read_document_from(filename):
-    with codecs.open(filename, 'r', encoding='utf-8') as f:
-        markdown_text = f.read()
-    parser = Parser(markdown_text)
-    document = parser.parse_document()
-    document.filename = filename
-    return document
 
 
 def main(args):
@@ -93,7 +81,6 @@ def main(args):
         document = read_document_from(filename)
         documents.append(document)
 
-    refdex = {}
     input_refdexes = []
     if options.input_refdex:
         input_refdexes.append(options.input_refdex)
@@ -101,37 +88,7 @@ def main(args):
         for input_refdex in options.input_refdexes.split(','):
             input_refdexes.append(input_refdex.strip())
 
-    for input_refdex in input_refdexes:
-        try:
-            with codecs.open(input_refdex, 'r', encoding='utf-8') as f:
-                local_refdex = json.loads(f.read())
-                if options.input_refdex_filename_prefix:
-                    for key, value in items(local_refdex):
-                        if 'filename' in value:
-                            value['filename'] = options.input_refdex_filename_prefix + value['filename']
-                refdex.update(local_refdex)
-        except:
-            sys.stderr.write("Could not read refdex JSON from '{}'\n".format(input_refdex))
-            raise
-
-    for key, value in items(refdex):
-        try:
-            assert isinstance(key, unicode)
-            if 'url' in value:
-                assert len(value) == 1
-                assert isinstance(value['url'], unicode)
-                value['url'].encode('utf-8')
-            elif 'filename' in value and 'anchor' in value:
-                assert len(value) == 2
-                assert isinstance(value['filename'], unicode)
-                value['filename'].encode('utf-8')
-                assert isinstance(value['anchor'], unicode)
-                value['anchor'].encode('utf-8')
-            else:
-                raise NotImplementedError("badly formed refdex")
-        except:
-            sys.stderr.write("Component of refdex not suitable: '{}: {}'\n".format(repr(key), repr(value)))
-            raise
+    refdex = read_refdex_from(input_refdexes, input_refdex_filename_prefix=options.input_refdex_filename_prefix)
 
     ### processing
 
