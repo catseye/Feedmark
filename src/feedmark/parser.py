@@ -4,7 +4,7 @@
 from datetime import datetime
 import re
 
-from feedmark.utils import quote_plus
+from feedmark.utils import quote
 
 
 def rewrite_reference_links(refdex, reference_links):
@@ -17,8 +17,8 @@ def rewrite_reference_links(refdex, reference_links):
         if name in refdex:
             entry = refdex[name]
             if 'filename' in entry and 'anchor' in entry:
-                filename = quote_plus(entry['filename'].encode('utf-8'))
-                anchor = quote_plus(entry['anchor'].encode('utf-8'))
+                filename = quote(entry['filename'].encode('utf-8'))
+                anchor = quote(entry['anchor'].encode('utf-8'))
                 url = u'{}#{}'.format(filename, anchor)
             elif 'url' in entry:
                 url = entry['url']
