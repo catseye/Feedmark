@@ -4,10 +4,10 @@
 from datetime import datetime
 import re
 
+from feedmark.utils import quote_plus
+
 
 def rewrite_reference_links(refdex, reference_links):
-    from urllib import quote
-
     new_reference_links = []
     seen_names = set()
     for (name, url) in reference_links:
@@ -17,17 +17,13 @@ def rewrite_reference_links(refdex, reference_links):
         if name in refdex:
             entry = refdex[name]
             if 'filename' in entry and 'anchor' in entry:
-                try:
-                    filename = quote(entry['filename'].encode('utf-8'))
-                    anchor = quote(entry['anchor'].encode('utf-8'))
-                except:
-                    sys.stderr.write(repr(entry))
-                    raise
+                filename = quote_plus(entry['filename'].encode('utf-8'))
+                anchor = quote_plus(entry['anchor'].encode('utf-8'))
                 url = u'{}#{}'.format(filename, anchor)
             elif 'url' in entry:
                 url = entry['url']
             else:
-                raise ValueError("Badly formed refdex entry: {}".format(json.dumps(entry)))
+                raise ValueError("Badly formed refdex entry: {}".format(entry))
         new_reference_links.append((name, url))
     return new_reference_links
 

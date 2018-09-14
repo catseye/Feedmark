@@ -2,6 +2,7 @@ try:
     from urllib import quote_plus
 except ImportError:
     from urllib.parse import quote_plus
+assert quote_plus
 
 
 def items(d):

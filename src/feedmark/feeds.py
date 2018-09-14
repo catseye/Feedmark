@@ -1,7 +1,5 @@
 # Feed-related, but Atom-independent, functions.
 
-import re
-
 from feedmark.utils import quote_plus
 
 

@@ -1,8 +1,5 @@
 from __future__ import absolute_import
 
-from datetime import datetime
-import re
-
 from markdown import markdown
 
 from feedmark.utils import items_in_priority_order
