@@ -1,12 +1,11 @@
 from __future__ import absolute_import
 
-from markdown import markdown
-
 from feedmark.utils import items_in_priority_order
 
 
 def markdown_to_html5(text):
     """Canonical function used within `feedmark` to convert Markdown text to a HTML5 snippet."""
+    from markdown import markdown
     return markdown(text, extensions=['toc'])
 
 
