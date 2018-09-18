@@ -2,11 +2,16 @@ import unittest
 
 from subprocess import check_call
 
+from feedmark.loader import read_document_from
+
 
 class TestFeedmark(unittest.TestCase):
 
     def test_load_documents(self):
-        check_call('./bin/feedmark eg/*.md', shell=True)
+        doc1 = read_document_from('eg/Ancient Llama Sightings.md')
+        self.assertEqual(doc1.title, "Ancient Llama Sightings")
+        doc2 = read_document_from('eg/Recent Llama Sightings.md')
+        self.assertEqual(doc2.title, "Recent Llama Sightings")
 
     def test_atom_feed(self):
         check_call('./bin/feedmark "eg/Recent Llama Sightings.md" --output-atom=feed.xml', shell=True)
