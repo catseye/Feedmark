@@ -16,17 +16,17 @@ class TestFeedmark(unittest.TestCase):
     def test_schema(self):
         check_call('./bin/feedmark eg/*Sightings*.md --check-against=eg/schema/Llama\ sighting.md', shell=True)
 
-    # # 4----
-    # ./bin/feedmark "eg/Recent Llama Sightings.md" --output-html >feed.html || exit 1
-    # grep '<h3 id="a-possible-llama-under-the-bridge">A Possible Llama Under the Bridge</h3>' feed.html > /dev/null || exit 1
-    # rm -f feed.html
-    # 
-    # # 5----
-    # ./bin/feedmark "eg/Ancient Llama Sightings.md" --output-json >feed.json || exit 1
-    # grep '"title": "Ancient Llama Sightings"' feed.json > /dev/null || exit 1
-    # grep '"title": "Maybe sighting the llama"' feed.json > /dev/null || exit 1
-    # grep '"date": "Jan 1 1984 12:00:00"' feed.json > /dev/null || exit 1
-    # rm -f feed.json
+    def test_output_html(self):
+        check_call('./bin/feedmark "eg/Recent Llama Sightings.md" --output-html >feed.html', shell=True)
+        check_call('''grep '<h3 id="a-possible-llama-under-the-bridge">A Possible Llama Under the Bridge</h3>' feed.html > /dev/null''', shell=True)
+        #check_call('rm -f feed.html')
+
+    def test_output_json(self):
+        check_call('./bin/feedmark "eg/Ancient Llama Sightings.md" --output-json >feed.json', shell=True)
+        check_call('''grep '"title": "Ancient Llama Sightings"' feed.json > /dev/null''', shell=True)
+        check_call('''grep '"title": "Maybe sighting the llama"' feed.json > /dev/null''', shell=True)
+        check_call('''grep '"date": "Jan 1 1984 12:00:00"' feed.json > /dev/null''', shell=True)
+        #check_call('rm -f feed.json')
 
 
 if __name__ == '__main__':
