@@ -69,6 +69,20 @@ class TestFeedmarkCommandLine(unittest.TestCase):
                 }
             ]
         })
+        self.assertDictEqual(data['documents'][0]['properties'], {
+            u'author': u'Alfred J. Prufrock',
+            u'link-to-anchors-on': u'https://github.com/catseye/Feedmark/blob/master/eg/Ancient%20Llama%20Sightings.md',
+            u'url': u'http://example.com/old_llama.xml'
+        })
+        self.assertEqual(data['documents'][0]['sections'], [
+            {
+                u'body': data['documents'][0]['sections'][0]['body'],
+                u'images': [],
+                u'properties': {u'date': u'Jan 1 1984 12:00:00'},
+                u'title': u'Maybe sighting the llama',
+            }
+        ])
+        self.assertIn(u'It was a possible llama sighting.\n\n', data['documents'][0]['sections'][0]['body'])
 
 
 class TestFeedmarkInternals(unittest.TestCase):
