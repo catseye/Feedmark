@@ -13,7 +13,8 @@ History of Feedmark
 *   Ability to archive targets of links has been split off into a
     separate utility (called `yastasoti` and hosted in its own repo)
     which consumes the new link JSON format.
-*   Tests pass when run under Python 3.
+*   Tests are an actual Python unittest suite, which passes when run
+    under Python 3.
 
 0.5
 ---

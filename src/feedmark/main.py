@@ -66,14 +66,9 @@ def main(args):
         help='Process no more than this many entries when making an Atom or HTML feed'
     )
 
-    options = argparser.parse_args(sys.argv[1:])
+    options = argparser.parse_args(args)
 
     documents = []
-
-    ### helpers
-
-    def write(s):
-        print(s.encode('utf-8'))
 
     ### input
 
@@ -99,7 +94,7 @@ def main(args):
         schema = Schema(schema_document)
         results = schema.check_documents([document])
         if results:
-            write(json.dumps(results, indent=4, sort_keys=True))
+            sys.stdout.write(json.dumps(results, indent=4, sort_keys=True))
             sys.exit(1)
 
     ### processing: collect refdex phase
@@ -123,21 +118,21 @@ def main(args):
     ### output
 
     if options.output_refdex:
-        write(json.dumps(refdex, indent=4, sort_keys=True))
+        sys.stdout.write(json.dumps(refdex, indent=4, sort_keys=True))
 
     if options.dump_entries:
         for document in documents:
             for section in document.sections:
-                write(section.title)
+                print(section.title)
                 for (name, url) in section.images:
-                    write(u'    !{}: {}'.format(name, url))
+                    print(u'    !{}: {}'.format(name, url))
                 for key, value in items(section.properties):
                     if isinstance(value, list):
-                        write(u'    {}@'.format(key))
+                        print(u'    {}@'.format(key))
                         for subitem in value:
-                            write(u'        {}'.format(subitem))
+                            print(u'        {}'.format(subitem))
                     else:
-                        write(u'    {}: {}'.format(key, value))
+                        print(u'    {}: {}'.format(key, value))
 
     if options.output_json:
         output_json = {
@@ -159,7 +154,7 @@ def main(args):
                     'body': section.body,
                 })
             output_json['documents'].append(document_json)
-        write(json.dumps(output_json, indent=4, sort_keys=True))
+        sys.stdout.write(json.dumps(output_json, indent=4, sort_keys=True))
 
     if options.by_publication_date:
         from feedmark.feeds import construct_entry_url
@@ -179,7 +174,7 @@ def main(args):
         if options.limit:
             dated_items = dated_items[:options.limit]
         output_json = [item for (d, item) in dated_items]
-        write(json.dumps(output_json, indent=4, sort_keys=True))
+        sys.stdout.write(json.dumps(output_json, indent=4, sort_keys=True))
 
     if options.by_property:
         by_property = {}
@@ -189,18 +184,18 @@ def main(args):
                     if isinstance(value, list):
                         key = u'{}@'.format(key)
                     by_property.setdefault(key, {}).setdefault(section.title, value)
-        write(json.dumps(by_property, indent=4))
+        sys.stdout.write(json.dumps(by_property, indent=4))
 
     if options.output_links:
         from feedmark.checkers import extract_links_from_documents
         links = extract_links_from_documents(documents)
-        write(json.dumps(links, indent=4, sort_keys=True))
+        sys.stdout.write(json.dumps(links, indent=4, sort_keys=True))
 
     if options.output_markdown:
         from feedmark.formats.markdown import feedmark_markdownize
         for document in documents:
             s = feedmark_markdownize(document, schema=schema)
-            write(s)
+            sys.stdout.write(s)
 
     if options.rewrite_markdown:
         from feedmark.formats.markdown import feedmark_markdownize
@@ -213,7 +208,7 @@ def main(args):
         from feedmark.formats.markdown import feedmark_htmlize
         for document in documents:
             s = feedmark_htmlize(document, schema=schema)
-            write(s)
+            sys.stdout.write(s)
 
     if options.output_atom:
         from feedmark.formats.atom import feedmark_atomize

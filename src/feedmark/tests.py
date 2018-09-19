@@ -1,13 +1,29 @@
 import unittest
 
+import json
 from os import unlink
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 from subprocess import check_call
+import sys
 
-from feedmark.loader import read_document_from
 from feedmark.checkers import Schema
+from feedmark.main import main
+from feedmark.loader import read_document_from
 
 
 class TestFeedmarkCommandLine(unittest.TestCase):
+
+    def setUp(self):
+        super(TestFeedmarkCommandLine, self).setUp()
+        self.saved_stdout = sys.stdout
+        sys.stdout = StringIO()
+
+    def tearDown(self):
+        sys.stdout = self.saved_stdout
+        super(TestFeedmarkCommandLine, self).tearDown()
 
     def assert_file_contains(self, filename, text):
         with open(filename, 'r') as f:
@@ -28,11 +44,20 @@ class TestFeedmarkCommandLine(unittest.TestCase):
         unlink('feed.html')
 
     def test_output_json(self):
-        check_call('./bin/feedmark "eg/Ancient Llama Sightings.md" --output-json >feed.json', shell=True)
-        self.assert_file_contains('feed.json', '"title": "Ancient Llama Sightings"')
-        self.assert_file_contains('feed.json', '"title": "Maybe sighting the llama"')
-        self.assert_file_contains('feed.json', '"date": "Jan 1 1984 12:00:00"')
-        unlink('feed.json')
+        self.maxDiff = None
+        result = main(['eg/Ancient Llama Sightings.md', '--output-json'])
+        data = json.loads(sys.stdout.getvalue())
+        self.assertDictEqual(data, {
+            u'documents': [
+                {
+                    u'filename': u'eg/Ancient Llama Sightings.md',
+                    u'title': u'Ancient Llama Sightings',
+                    u'preamble': u'',
+                    u'properties': data['documents'][0]['properties'],
+                    u'sections': data['documents'][0]['sections'],
+                }
+            ]
+        })
 
 
 class TestFeedmarkInternals(unittest.TestCase):
