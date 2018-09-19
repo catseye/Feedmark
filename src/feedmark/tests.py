@@ -1,3 +1,4 @@
+
 import unittest
 
 import json
@@ -34,6 +35,20 @@ class TestFeedmarkCommandLine(unittest.TestCase):
 
     def test_schema(self):
         main(["eg/Recent Llama Sightings.md", "eg/Ancient Llama Sightings.md", '--check-against=eg/schema/Llama sighting.md'])
+        output = sys.stdout.getvalue()
+        self.assertEqual(output, '')
+
+    def test_schema_failure(self):
+        with self.assertRaises(SystemExit) as ar:
+            main(["eg/Ill-formed Llama Sightings.md", '--check-against=eg/schema/Llama sighting.md'])
+        data = json.loads(sys.stdout.getvalue())
+        self.assertEqual(data, [
+            {
+                u'document': u'Ill-formed Llama Sightings',
+                u'result': [[u'extra', u'excuse'], [u'missing', u'date']],
+                u'section': u'Definite llama sighting with no date'
+            }
+        ])
 
     def test_output_html(self):
         main(["eg/Recent Llama Sightings.md", "--output-html"])
