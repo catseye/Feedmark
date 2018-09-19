@@ -1,4 +1,10 @@
 try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
+assert StringIO
+
+try:
     from urllib import quote, quote_plus
 except ImportError:
     from urllib.parse import quote, quote_plus
