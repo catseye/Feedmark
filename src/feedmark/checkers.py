@@ -79,7 +79,7 @@ def extract_links_from_documents(documents):
         for section in document.sections:
             for (name, url) in section.images:
                 links.append(make_link(url, section=section, name=name))
-            for key, value in section.properties.iteritems():
+            for key, value in items(section.properties):
                 if isinstance(value, list):
                     for subitem in value:
                         extend_links(section, subitem)

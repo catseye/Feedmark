@@ -111,6 +111,23 @@ class TestFeedmarkCommandLine(unittest.TestCase):
         output = sys.stdout.getvalue()
         self.assertIn('[2 Llamas Spotted Near Mall]: eg/Recent%20Llama%20Sightings.md#2-llamas-spotted-near-mall', output)
 
+    def test_output_links(self):
+        main(['eg/Ill-formed Llama Sightings.md', '--output-links'])
+        data = json.loads(sys.stdout.getvalue())
+        self.assertEqual(data, [
+            {
+                u'document': u'Ill-formed Llama Sightings',
+                u'name': u'2 Llamas Spotted Near Mall',
+                u'section': u'Definite llama sighting with no date',
+                u'url': u'TK'
+            },
+            {
+                u'document': u'Ill-formed Llama Sightings',
+                u'section': u'Definite llama sighting with no date',
+                u'url': u'https://tcrf.net/The_Cutting_Room_Floor'
+            }
+        ])
+
 
 class TestFeedmarkInternals(unittest.TestCase):
 

@@ -11,6 +11,7 @@
 It was at least fifty feet tall but I don't remember what day it was.
 I'm quite certain it was a llama, though.
 It was just as if [2 Llamas Spotted Near Mall][].
+It was just like [The Cutting Room Floor](https://tcrf.net/The_Cutting_Room_Floor)!
 That's what it was like.
 
 [2 Llamas Spotted Near Mall]: TK
