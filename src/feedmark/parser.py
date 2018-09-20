@@ -4,16 +4,28 @@
 from datetime import datetime
 import re
 
+from feedmark.utils import quote
 
-def anchor_for(title):
-    """`title` should be a Unicode.  Return value is UTF-8 encoded.
 
-    >>> anchor_for(u'3×C(21,3)+2×C(215,2)=50000: The Novel')
-    '3c2132c215250000-the-novel'
-
-    """
-    title = re.sub(ur"""['":,.!()+×=]""", u'', title)
-    return (title.replace(u' ', u'-').lower()).encode('utf-8')
+def rewrite_reference_links(refdex, reference_links):
+    new_reference_links = []
+    seen_names = set()
+    for (name, url) in reference_links:
+        if name in seen_names:
+            continue
+        seen_names.add(name)
+        if name in refdex:
+            entry = refdex[name]
+            if 'filename' in entry and 'anchor' in entry:
+                filename = quote(entry['filename'].encode('utf-8'))
+                anchor = quote(entry['anchor'].encode('utf-8'))
+                url = u'{}#{}'.format(filename, anchor)
+            elif 'url' in entry:
+                url = entry['url']
+            else:
+                raise ValueError("Badly formed refdex entry: {}".format(entry))
+        new_reference_links.append((name, url))
+    return new_reference_links
 
 
 class Document(object):
@@ -26,6 +38,11 @@ class Document(object):
 
     def __str__(self):
         return "document '{}'".format(self.title.encode('utf-8'))
+
+    def rewrite_reference_links(self, refdex):
+        self.reference_links = rewrite_reference_links(refdex, self.reference_links)
+        for section in self.sections:
+            section.reference_links = rewrite_reference_links(refdex, section.reference_links)
 
 
 class Section(object):
@@ -69,7 +86,9 @@ class Section(object):
 
     @property
     def anchor(self):
-        return anchor_for(self.title)
+        from markdown.extensions.toc import slugify
+
+        return slugify(self.title, '-')
 
 
 class Parser(object):

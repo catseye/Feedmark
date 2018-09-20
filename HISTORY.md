@@ -1,6 +1,21 @@
 History of Feedmark
 ===================
 
+0.6
+---
+
+*   Uses the `toc` extension that ships with `markdown` to generate
+    heading-anchors (instead of a home-rolled function for that.)
+*   Heading anchors are generated on all header levels, not just `h3`.
+*   Format in which links extracted from documents are output in JSON
+    has changed.  Each link is a dictionary, includes more info.
+*   Able to output links that don't appear in any Feedmark section.
+*   Ability to archive targets of links has been split off into a
+    separate utility (called `yastasoti` and hosted in its own repo)
+    which consumes the new link JSON format.
+*   Tests are an actual Python unittest suite, which passes when run
+    under Python 3.
+
 0.5
 ---
 
