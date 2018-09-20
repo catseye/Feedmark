@@ -84,6 +84,28 @@ class TestFeedmarkCommandLine(unittest.TestCase):
         ])
         self.assertIn(u'It was a possible llama sighting.\n\n', data['documents'][0]['sections'][0]['body'])
 
+    def test_output_refdex(self):
+        main(['eg/Recent Llama Sightings.md', 'eg/Ancient Llama Sightings.md', '--output-refdex'])
+        data = json.loads(sys.stdout.getvalue())
+        self.assertDictEqual(data, {
+            "2 Llamas Spotted Near Mall": {
+                "anchor": "2-llamas-spotted-near-mall",
+                "filename": "eg/Recent Llama Sightings.md"
+            },
+            "A Possible Llama Under the Bridge": {
+                "anchor": "a-possible-llama-under-the-bridge",
+                "filename": "eg/Recent Llama Sightings.md"
+            },
+            "Llamas: It's Time to Spot Them": {
+                "anchor": "llamas-its-time-to-spot-them",
+                "filename": "eg/Recent Llama Sightings.md"
+            },
+            "Maybe sighting the llama": {
+                "anchor": "maybe-sighting-the-llama",
+                "filename": "eg/Ancient Llama Sightings.md"
+            }
+        })
+
 
 class TestFeedmarkInternals(unittest.TestCase):
 
