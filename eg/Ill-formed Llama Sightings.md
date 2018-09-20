@@ -9,5 +9,8 @@
 *   excuse: I don't remember what day it was
 
 It was at least fifty feet tall but I don't remember what day it was.
+I'm quite certain it was a llama, though.
+It was just as if [2 Llamas Spotted Near Mall][].
+That's what it was like.
 
-I'm quite certain it was a llama.
+[2 Llamas Spotted Near Mall]: TK

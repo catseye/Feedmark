@@ -106,6 +106,11 @@ class TestFeedmarkCommandLine(unittest.TestCase):
             }
         })
 
+    def test_input_refdex_output_markdown(self):
+        main(['eg/Ill-formed Llama Sightings.md', '--input-refdex', 'eg/refdex.json', '--output-markdown'])
+        output = sys.stdout.getvalue()
+        self.assertIn('[2 Llamas Spotted Near Mall]: eg/Recent%20Llama%20Sightings.md#2-llamas-spotted-near-mall', output)
+
 
 class TestFeedmarkInternals(unittest.TestCase):
 

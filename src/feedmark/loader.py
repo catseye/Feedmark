@@ -30,18 +30,24 @@ def read_refdex_from(filenames, input_refdex_filename_prefix=None):
             sys.stderr.write("Could not read refdex JSON from '{}'\n".format(filename))
             raise
 
+    # Python 2/3
+    try:
+        unicode_string = unicode
+    except NameError:
+        unicode_string = str
+
     for key, value in items(refdex):
         try:
-            assert isinstance(key, unicode)
+            assert isinstance(key, unicode_string)
             if 'url' in value:
                 assert len(value) == 1
-                assert isinstance(value['url'], unicode)
+                assert isinstance(value['url'], unicode_string)
                 value['url'].encode('utf-8')
             elif 'filename' in value and 'anchor' in value:
                 assert len(value) == 2
-                assert isinstance(value['filename'], unicode)
+                assert isinstance(value['filename'], unicode_string)
                 value['filename'].encode('utf-8')
-                assert isinstance(value['anchor'], unicode)
+                assert isinstance(value['anchor'], unicode_string)
                 value['anchor'].encode('utf-8')
             else:
                 raise NotImplementedError("badly formed refdex")
