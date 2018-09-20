@@ -39,7 +39,7 @@ class TestFeedmarkCommandLine(unittest.TestCase):
         self.assertEqual(output, '')
 
     def test_schema_failure(self):
-        with self.assertRaises(SystemExit) as ar:
+        with self.assertRaises(SystemExit):
             main(["eg/Ill-formed Llama Sightings.md", '--check-against=eg/schema/Llama sighting.md'])
         data = json.loads(sys.stdout.getvalue())
         self.assertEqual(data, [
