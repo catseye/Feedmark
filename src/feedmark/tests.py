@@ -1,14 +1,43 @@
-
 import unittest
 
 import json
-from os import unlink
+import os
 import sys
+from subprocess import check_call
+from tempfile import mkdtemp
 
 from feedmark.checkers import Schema
 from feedmark.main import main
 from feedmark.loader import read_document_from
 from feedmark.utils import StringIO
+
+
+class TestFeedmarkFileCreation(unittest.TestCase):
+
+    def setUp(self):
+        super(TestFeedmarkFileCreation, self).setUp()
+        self.saved_stdout = sys.stdout
+        sys.stdout = StringIO()
+        self.maxDiff = None
+        self.dirname = mkdtemp()
+        self.prevdir = os.getcwd()
+        os.chdir(self.dirname)
+
+    def tearDown(self):
+        os.chdir(self.prevdir)
+        check_call("rm -rf {}".format(self.dirname), shell=True)
+        sys.stdout = self.saved_stdout
+        super(TestFeedmarkFileCreation, self).tearDown()
+
+    def assert_file_contains(self, filename, text):
+        with open(filename, 'r') as f:
+            contents = f.read()
+        self.assertIn(text, contents)
+
+    def test_atom_feed(self):
+        main(["{}/eg/Recent Llama Sightings.md".format(self.prevdir), '--output-atom=feed.xml'])
+        self.assert_file_contains('feed.xml', '<id>http://example.com/llama.xml/2 Llamas Spotted Near Mall</id>')
+        os.unlink('feed.xml')
 
 
 class TestFeedmarkCommandLine(unittest.TestCase):
@@ -22,16 +51,6 @@ class TestFeedmarkCommandLine(unittest.TestCase):
     def tearDown(self):
         sys.stdout = self.saved_stdout
         super(TestFeedmarkCommandLine, self).tearDown()
-
-    def assert_file_contains(self, filename, text):
-        with open(filename, 'r') as f:
-            contents = f.read()
-        self.assertIn(text, contents)
-
-    def test_atom_feed(self):
-        main(["eg/Recent Llama Sightings.md", '--output-atom=feed.xml'])
-        self.assert_file_contains('feed.xml', '<id>http://example.com/llama.xml/2 Llamas Spotted Near Mall</id>')
-        unlink('feed.xml')
 
     def test_schema(self):
         main(["eg/Recent Llama Sightings.md", "eg/Ancient Llama Sightings.md", '--check-against=eg/schema/Llama sighting.md'])
