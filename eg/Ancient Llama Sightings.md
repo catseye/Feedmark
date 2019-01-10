@@ -2,7 +2,7 @@
 
 *   author: Alfred J. Prufrock
 *   url: http://example.com/old_llama.xml
-*   link-to-anchors-on: https://github.com/catseye/Feedmark/blob/master/eg/Ancient%20Llama%20Sightings.md
+*   link-target-url: https://github.com/catseye/Feedmark/blob/master/eg/Ancient%20Llama%20Sightings.md
 
 ### Maybe sighting the llama
 

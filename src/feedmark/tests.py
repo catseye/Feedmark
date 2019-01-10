@@ -37,6 +37,9 @@ class TestFeedmarkFileCreation(unittest.TestCase):
     def test_atom_feed(self):
         main(["{}/eg/Recent Llama Sightings.md".format(self.prevdir), '--output-atom=feed.xml'])
         self.assert_file_contains('feed.xml', '<id>http://example.com/llama.xml/2 Llamas Spotted Near Mall</id>')
+        self.assert_file_contains('feed.xml',
+            'https://github.com/catseye/Feedmark/blob/master/eg/Recent%20Llama%20Sightings.md#2-llamas-spotted-near-mall'
+        )
         os.unlink('feed.xml')
 
 
@@ -90,7 +93,7 @@ class TestFeedmarkCommandLine(unittest.TestCase):
         })
         self.assertDictEqual(data['documents'][0]['properties'], {
             u'author': u'Alfred J. Prufrock',
-            u'link-to-anchors-on': u'https://github.com/catseye/Feedmark/blob/master/eg/Ancient%20Llama%20Sightings.md',
+            u'link-target-url': u'https://github.com/catseye/Feedmark/blob/master/eg/Ancient%20Llama%20Sightings.md',
             u'url': u'http://example.com/old_llama.xml'
         })
         self.assertEqual(data['documents'][0]['sections'], [

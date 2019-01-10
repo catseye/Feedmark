@@ -2,7 +2,7 @@
 
 *   author: Alfred J. Prufrock
 *   url: http://example.com/llama.xml
-*   link-to-anchors-on: https://github.com/catseye/Feedmark/blob/master/eg/Recent%20Llama%20Sightings.md
+*   link-target-url: https://github.com/catseye/Feedmark/blob/master/eg/Recent%20Llama%20Sightings.md
 
 ### 2 Llamas Spotted Near Mall
 

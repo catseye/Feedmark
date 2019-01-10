@@ -1,6 +1,12 @@
 History of Feedmark
 ===================
 
+0.7
+---
+
+*   Renamed `link-to-anchors-on` property to `link-target-url`.
+*   Improved unit tests.
+
 0.6
 ---
 
