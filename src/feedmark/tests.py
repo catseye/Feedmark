@@ -1,14 +1,46 @@
-
 import unittest
 
 import json
-from os import unlink
+import os
 import sys
+from subprocess import check_call
+from tempfile import mkdtemp
 
 from feedmark.checkers import Schema
 from feedmark.main import main
 from feedmark.loader import read_document_from
 from feedmark.utils import StringIO
+
+
+class TestFeedmarkFileCreation(unittest.TestCase):
+
+    def setUp(self):
+        super(TestFeedmarkFileCreation, self).setUp()
+        self.saved_stdout = sys.stdout
+        sys.stdout = StringIO()
+        self.maxDiff = None
+        self.dirname = mkdtemp()
+        self.prevdir = os.getcwd()
+        os.chdir(self.dirname)
+
+    def tearDown(self):
+        os.chdir(self.prevdir)
+        check_call("rm -rf {}".format(self.dirname), shell=True)
+        sys.stdout = self.saved_stdout
+        super(TestFeedmarkFileCreation, self).tearDown()
+
+    def assert_file_contains(self, filename, text):
+        with open(filename, 'r') as f:
+            contents = f.read()
+        self.assertIn(text, contents)
+
+    def test_atom_feed(self):
+        main(["{}/eg/Recent Llama Sightings.md".format(self.prevdir), '--output-atom=feed.xml'])
+        self.assert_file_contains('feed.xml', '<id>http://example.com/llama.xml/2 Llamas Spotted Near Mall</id>')
+        self.assert_file_contains('feed.xml',
+            'https://github.com/catseye/Feedmark/blob/master/eg/Recent%20Llama%20Sightings.md#2-llamas-spotted-near-mall'
+        )
+        os.unlink('feed.xml')
 
 
 class TestFeedmarkCommandLine(unittest.TestCase):
@@ -22,16 +54,6 @@ class TestFeedmarkCommandLine(unittest.TestCase):
     def tearDown(self):
         sys.stdout = self.saved_stdout
         super(TestFeedmarkCommandLine, self).tearDown()
-
-    def assert_file_contains(self, filename, text):
-        with open(filename, 'r') as f:
-            contents = f.read()
-        self.assertIn(text, contents)
-
-    def test_atom_feed(self):
-        main(["eg/Recent Llama Sightings.md", '--output-atom=feed.xml'])
-        self.assert_file_contains('feed.xml', '<id>http://example.com/llama.xml/2 Llamas Spotted Near Mall</id>')
-        unlink('feed.xml')
 
     def test_schema(self):
         main(["eg/Recent Llama Sightings.md", "eg/Ancient Llama Sightings.md", '--check-against=eg/schema/Llama sighting.md'])
@@ -71,7 +93,7 @@ class TestFeedmarkCommandLine(unittest.TestCase):
         })
         self.assertDictEqual(data['documents'][0]['properties'], {
             u'author': u'Alfred J. Prufrock',
-            u'link-to-anchors-on': u'https://github.com/catseye/Feedmark/blob/master/eg/Ancient%20Llama%20Sightings.md',
+            u'link-target-url': u'https://github.com/catseye/Feedmark/blob/master/eg/Ancient%20Llama%20Sightings.md',
             u'url': u'http://example.com/old_llama.xml'
         })
         self.assertEqual(data['documents'][0]['sections'], [
