@@ -114,8 +114,7 @@ class TestFeedmarkCommandLine(unittest.TestCase):
                 {
                     u'filename': u'eg/Referenced Llama Sightings.md',
                     u'title': u'Referenced Llama Sightings',
-                    #u'preamble': u'<p>Some <strong>llamas</strong> have been <a href="spotted.html">spotted</a> recently.</p>',
-                    u'preamble': u'<p>Some <strong>llamas</strong> have been [spotted][] recently.</p>',
+                    u'preamble': u'<p>Some <strong>llamas</strong> have been <a href="spotted.html">spotted</a> recently.</p>',
                     u'properties': data['documents'][0]['properties'],
                     u'sections': data['documents'][0]['sections'],
                 }
@@ -128,6 +127,18 @@ class TestFeedmarkCommandLine(unittest.TestCase):
              "<a href=\"https://daringfireball.net/projects/markdown/\">Markdown</a>\ncan be used.</p>\n"
              "<p>To <a href=\"https://en.wikipedia.org/wiki/Site\">site</a> them.</p>\n<p>Sight them, sigh.</p>"
          )
+        self.assertEqual(
+            data['documents'][0]['properties']['hopper'],
+            '<a href="https://en.wikipedia.org/wiki/Stephen_Hopper">Stephen</a>'
+        )
+        self.assertEqual(data['documents'][0]['properties']['llama'], 'has been <a href="spotted.html">spotted</a>')
+        self.assertEqual(
+            data['documents'][0]['sections'][0]['properties']['hopper'],
+            '<a href="https://en.wikipedia.org/wiki/Grace_Hopper">Grace</a>'
+        )
+        self.assertEqual(
+            data['documents'][0]['sections'][0]['properties']['llama'], "it's been <a href=\"spotted.html\">spotted</a>"
+        )
 
     def test_output_refdex(self):
         main(['eg/Recent Llama Sightings.md', 'eg/Ancient Llama Sightings.md', '--output-refdex'])

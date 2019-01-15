@@ -4,6 +4,7 @@
 *   url: http://example.com/refllama.xml
 *   link-target-url: https://github.com/catseye/Feedmark/blob/master/eg/Referenced%20Llama%20Sightings.md
 *   hopper: [Stephen](https://en.wikipedia.org/wiki/Stephen_Hopper)
+*   llama: has been [spotted][]
 
 Some **llamas** have been [spotted][] recently.
 
@@ -11,6 +12,7 @@ Some **llamas** have been [spotted][] recently.
 
 *   date: Nov 1 2016 09:00:00
 *   hopper: [Grace](https://en.wikipedia.org/wiki/Grace_Hopper)
+*   llama: it's been [spotted][]
 
 I have strong opinions about this.  It's a _shame_ more llamas aren't
 being spotted.  Sometimes they are **striped**, it's true, but  

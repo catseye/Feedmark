@@ -44,13 +44,22 @@ class Document(object):
         for section in self.sections:
             section.reference_links = rewrite_reference_links(refdex, section.reference_links)
 
+    def global_reference_links(self):
+        reference_links = []
+        reference_links.extend(self.reference_links)
+        for section in self.sections:
+            reference_links.extend(section.reference_links)
+        return reference_links
+
     def to_json_data(self, **kwargs):
 
         # TODO: also HTMLize properties
         htmlize = kwargs.get('htmlize', False)
         if htmlize:
+            if 'reference_links' not in kwargs:
+                kwargs['reference_links'] = self.global_reference_links()
             from feedmark.formats.markdown import markdown_to_html5
-            preamble = markdown_to_html5(self.preamble, reference_links=self.reference_links)
+            preamble = markdown_to_html5(self.preamble, reference_links=kwargs['reference_links'])
         else:
             preamble = self.preamble
 
@@ -114,7 +123,7 @@ class Section(object):
         htmlize = kwargs.get('htmlize', False)
         if htmlize:
             from feedmark.formats.markdown import markdown_to_html5
-            body = markdown_to_html5(self.body, reference_links=self.reference_links)
+            body = markdown_to_html5(self.body, reference_links=kwargs['reference_links'])
         else:
             body = self.body
 
