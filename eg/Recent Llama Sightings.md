@@ -4,8 +4,6 @@
 *   url: http://example.com/llama.xml
 *   link-target-url: https://github.com/catseye/Feedmark/blob/master/eg/Recent%20Llama%20Sightings.md
 
-Some **llamas** have been spotted recently.
-
 ### 2 Llamas Spotted Near Mall
 
 *   date: Jan 1 2017 13:45:30
