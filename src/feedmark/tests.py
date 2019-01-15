@@ -106,6 +106,29 @@ class TestFeedmarkCommandLine(unittest.TestCase):
         ])
         self.assertIn(u'It was a possible llama sighting.\n\n', data['documents'][0]['sections'][0]['body'])
 
+    def test_output_htmlized_json(self):
+        main(['eg/Recent Llama Sightings.md', '--output-json', '--htmlized-json'])
+        data = json.loads(sys.stdout.getvalue())
+        self.assertDictEqual(data, {
+            u'documents': [
+                {
+                    u'filename': u'eg/Recent Llama Sightings.md',
+                    u'title': u'Recent Llama Sightings',
+                    u'preamble': u'<p>Some <strong>llamas</strong> have been spotted recently.</p>',
+                    u'properties': data['documents'][0]['properties'],
+                    u'sections': data['documents'][0]['sections'],
+                }
+            ]
+        })
+        section = data['documents'][0]['sections'][2]
+        self.assertIn(
+            u"<p>I have strong opinions about this.  It's a <em>shame</em> more llamas aren't\nbeing spotted.  "
+             "Sometimes they are <strong>striped</strong>, it's true, but<br />\nwhen<br />\nthey are, "
+             "<a href=\"https://daringfireball.net/projects/markdown/\">Markdown</a>\ncan be used.</p>\n"
+             "<p>To site them.</p>\n<p>Sight them, sigh.</p>",
+             section['body']
+         )
+
     def test_output_refdex(self):
         main(['eg/Recent Llama Sightings.md', 'eg/Ancient Llama Sightings.md', '--output-refdex'])
         data = json.loads(sys.stdout.getvalue())

@@ -44,6 +44,25 @@ class Document(object):
         for section in self.sections:
             section.reference_links = rewrite_reference_links(refdex, section.reference_links)
 
+    def to_json_data(self, **kwargs):
+
+        # TODO: support injecting reference links
+        # TODO: also HTMLize properties
+        htmlize = kwargs.get('htmlize', False)
+        if htmlize:
+            from feedmark.formats.markdown import markdown_to_html5
+            preamble = markdown_to_html5(self.preamble)
+        else:
+            preamble = self.preamble
+
+        return {
+            'filename': self.filename,
+            'title': self.title,
+            'properties': self.properties,
+            'preamble': preamble,
+            'sections': [s.to_json_data(**kwargs) for s in self.sections],
+        }
+
 
 class Section(object):
     def __init__(self, title):
@@ -89,6 +108,24 @@ class Section(object):
         from markdown.extensions.toc import slugify
 
         return slugify(self.title, '-')
+
+    def to_json_data(self, **kwargs):
+
+        # TODO: support injecting reference links
+        # TODO: also HTMLize properties
+        htmlize = kwargs.get('htmlize', False)
+        if htmlize:
+            from feedmark.formats.markdown import markdown_to_html5
+            body = markdown_to_html5(self.body)
+        else:
+            body = self.body
+
+        return {
+            'title': self.title,
+            'images': self.images,
+            'properties': self.properties,
+            'body': body,
+        }
 
 
 class Parser(object):
