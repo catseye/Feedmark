@@ -4,7 +4,12 @@
 from datetime import datetime
 import re
 
+from feedmark.formats.markdown import markdown_to_html5
 from feedmark.utils import quote
+
+
+def markdown_to_html5_properties(properties, **kwargs):
+    return dict((k, markdown_to_html5(v, **kwargs)) for k, v in properties.items())
 
 
 def rewrite_reference_links(refdex, reference_links):
@@ -53,20 +58,20 @@ class Document(object):
 
     def to_json_data(self, **kwargs):
 
-        # TODO: also HTMLize properties
         htmlize = kwargs.get('htmlize', False)
         if htmlize:
             if 'reference_links' not in kwargs:
                 kwargs['reference_links'] = self.global_reference_links()
-            from feedmark.formats.markdown import markdown_to_html5
             preamble = markdown_to_html5(self.preamble, reference_links=kwargs['reference_links'])
+            properties = markdown_to_html5_properties(self.properties, reference_links=kwargs['reference_links'])
         else:
             preamble = self.preamble
+            properties = self.properties
 
         return {
             'filename': self.filename,
             'title': self.title,
-            'properties': self.properties,
+            'properties': properties,
             'preamble': preamble,
             'sections': [s.to_json_data(**kwargs) for s in self.sections],
         }
@@ -119,18 +124,18 @@ class Section(object):
 
     def to_json_data(self, **kwargs):
 
-        # TODO: also HTMLize properties
         htmlize = kwargs.get('htmlize', False)
         if htmlize:
-            from feedmark.formats.markdown import markdown_to_html5
             body = markdown_to_html5(self.body, reference_links=kwargs['reference_links'])
+            properties = markdown_to_html5_properties(self.properties, reference_links=kwargs['reference_links'])
         else:
             body = self.body
+            properties = self.properties
 
         return {
             'title': self.title,
             'images': self.images,
-            'properties': self.properties,
+            'properties': properties,
             'body': body,
         }
 
