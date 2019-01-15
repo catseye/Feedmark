@@ -3,9 +3,13 @@ from __future__ import absolute_import
 from feedmark.utils import items_in_priority_order
 
 
-def markdown_to_html5(text):
+def markdown_to_html5(text, reference_links=None):
     """Canonical function used within `feedmark` to convert Markdown text to a HTML5 snippet."""
     from markdown import markdown
+
+    if reference_links:
+        text += markdownize_reference_links(reference_links)
+
     return markdown(text, extensions=['markdown.extensions.toc'])
 
 

@@ -46,12 +46,11 @@ class Document(object):
 
     def to_json_data(self, **kwargs):
 
-        # TODO: support injecting reference links
         # TODO: also HTMLize properties
         htmlize = kwargs.get('htmlize', False)
         if htmlize:
             from feedmark.formats.markdown import markdown_to_html5
-            preamble = markdown_to_html5(self.preamble)
+            preamble = markdown_to_html5(self.preamble, reference_links=self.reference_links)
         else:
             preamble = self.preamble
 
@@ -111,12 +110,11 @@ class Section(object):
 
     def to_json_data(self, **kwargs):
 
-        # TODO: support injecting reference links
         # TODO: also HTMLize properties
         htmlize = kwargs.get('htmlize', False)
         if htmlize:
             from feedmark.formats.markdown import markdown_to_html5
-            body = markdown_to_html5(self.body)
+            body = markdown_to_html5(self.body, reference_links=self.reference_links)
         else:
             body = self.body
 

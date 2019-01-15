@@ -114,7 +114,8 @@ class TestFeedmarkCommandLine(unittest.TestCase):
                 {
                     u'filename': u'eg/Referenced Llama Sightings.md',
                     u'title': u'Referenced Llama Sightings',
-                    u'preamble': u'<p>Some <strong>llamas</strong> have been <a href="spotted.html">spotted</a> recently.</p>',
+                    #u'preamble': u'<p>Some <strong>llamas</strong> have been <a href="spotted.html">spotted</a> recently.</p>',
+                    u'preamble': u'<p>Some <strong>llamas</strong> have been [spotted][] recently.</p>',
                     u'properties': data['documents'][0]['properties'],
                     u'sections': data['documents'][0]['sections'],
                 }
