@@ -1,3 +1,9 @@
+# Python 2/3
+try:
+    unicode = unicode
+except NameError:
+    unicode = str
+
 try:
     from StringIO import StringIO
 except ImportError:

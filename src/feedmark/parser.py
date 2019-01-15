@@ -5,11 +5,18 @@ from datetime import datetime
 import re
 
 from feedmark.formats.markdown import markdown_to_html5
-from feedmark.utils import quote
+from feedmark.utils import quote, unicode
 
 
-def markdown_to_html5_properties(properties, **kwargs):
-    return dict((k, markdown_to_html5(v, **kwargs)) for k, v in properties.items())
+def markdown_to_html5_deep(obj, **kwargs):
+    if obj is None:
+        return None
+    elif isinstance(obj, dict):
+        return dict((k, markdown_to_html5_deep(v, **kwargs)) for k, v in obj.items())
+    elif isinstance(obj, list):
+        return [markdown_to_html5_deep(subobj, **kwargs) for subobj in obj]
+    else:
+        return markdown_to_html5(unicode(obj), **kwargs)
 
 
 def rewrite_reference_links(refdex, reference_links):
@@ -63,7 +70,7 @@ class Document(object):
             if 'reference_links' not in kwargs:
                 kwargs['reference_links'] = self.global_reference_links()
             preamble = markdown_to_html5(self.preamble, reference_links=kwargs['reference_links'])
-            properties = markdown_to_html5_properties(self.properties, reference_links=kwargs['reference_links'])
+            properties = markdown_to_html5_deep(self.properties, reference_links=kwargs['reference_links'])
         else:
             preamble = self.preamble
             properties = self.properties
@@ -127,7 +134,7 @@ class Section(object):
         htmlize = kwargs.get('htmlize', False)
         if htmlize:
             body = markdown_to_html5(self.body, reference_links=kwargs['reference_links'])
-            properties = markdown_to_html5_properties(self.properties, reference_links=kwargs['reference_links'])
+            properties = markdown_to_html5_deep(self.properties, reference_links=kwargs['reference_links'])
         else:
             body = self.body
             properties = self.properties
