@@ -4,19 +4,8 @@
 from datetime import datetime
 import re
 
-from feedmark.formats.markdown import markdown_to_html5
-from feedmark.utils import quote, unicode
-
-
-def markdown_to_html5_deep(obj, **kwargs):
-    if obj is None:
-        return None
-    elif isinstance(obj, dict):
-        return dict((k, markdown_to_html5_deep(v, **kwargs)) for k, v in obj.items())
-    elif isinstance(obj, list):
-        return [markdown_to_html5_deep(subobj, **kwargs) for subobj in obj]
-    else:
-        return markdown_to_html5(unicode(obj), **kwargs)
+from feedmark.formats.markdown import markdown_to_html5, markdown_to_html5_deep
+from feedmark.utils import quote
 
 
 def rewrite_reference_links(refdex, reference_links):

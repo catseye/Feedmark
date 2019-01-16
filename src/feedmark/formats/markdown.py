@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 
-from feedmark.utils import items_in_priority_order
+from feedmark.utils import items_in_priority_order, unicode
 
 
 def markdown_to_html5(text, reference_links=None):
@@ -11,6 +11,17 @@ def markdown_to_html5(text, reference_links=None):
         text += markdownize_reference_links(reference_links)
 
     return markdown(text, extensions=['markdown.extensions.toc'])
+
+
+def markdown_to_html5_deep(obj, **kwargs):
+    if obj is None:
+        return None
+    elif isinstance(obj, dict):
+        return dict((k, markdown_to_html5_deep(v, **kwargs)) for k, v in obj.items())
+    elif isinstance(obj, list):
+        return [markdown_to_html5_deep(subobj, **kwargs) for subobj in obj]
+    else:
+        return markdown_to_html5(unicode(obj), **kwargs)
 
 
 def markdownize_properties(properties, property_priority_order):
