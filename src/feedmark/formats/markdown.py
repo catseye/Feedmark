@@ -1,6 +1,15 @@
 from __future__ import absolute_import
 
+import re
+
 from feedmark.utils import items_in_priority_order, unicode
+
+
+def remove_outer_p(html):
+    match = re.match(r'^\s*\<\s*p\s*\>\s*(.*?)\s*\<\s*/\s*p\s*\>\s*$', html)
+    if match:
+        html = match.group(1)
+    return html
 
 
 def markdown_to_html5(text, reference_links=None):
@@ -17,7 +26,7 @@ def markdown_to_html5_deep(obj, **kwargs):
     if obj is None:
         return None
     elif isinstance(obj, dict):
-        return dict((k, markdown_to_html5_deep(v, **kwargs)) for k, v in obj.items())
+        return dict((k, remove_outer_p(markdown_to_html5_deep(v, **kwargs))) for k, v in obj.items())
     elif isinstance(obj, list):
         return [markdown_to_html5_deep(subobj, **kwargs) for subobj in obj]
     else:

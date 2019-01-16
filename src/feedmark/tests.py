@@ -126,18 +126,19 @@ class TestFeedmarkCommandLine(unittest.TestCase):
              "Sometimes they are <strong>striped</strong>, it's true, but<br />\nwhen<br />\nthey are, "
              "<a href=\"https://daringfireball.net/projects/markdown/\">Markdown</a>\ncan be used.</p>\n"
              "<p>To <a href=\"https://en.wikipedia.org/wiki/Site\">site</a> them.</p>\n<p>Sight them, sigh.</p>"
-         )
+        )
+        # note that property values are bare HTML: there is no surrounding <p></p> or other element
         self.assertEqual(
             data['documents'][0]['properties']['hopper'],
-            '<p><a href="https://en.wikipedia.org/wiki/Stephen_Hopper">Stephen</a></p>'
+            '<a href="https://en.wikipedia.org/wiki/Stephen_Hopper">Stephen</a>'
         )
-        self.assertEqual(data['documents'][0]['properties']['llama'], '<p>has been <a href="spotted.html">spotted</a></p>')
+        self.assertEqual(data['documents'][0]['properties']['llama'], 'has been <a href="spotted.html">spotted</a>')
         self.assertEqual(
             data['documents'][0]['sections'][0]['properties']['hopper'],
-            '<p><a href="https://en.wikipedia.org/wiki/Grace_Hopper">Grace</a></p>'
+            '<a href="https://en.wikipedia.org/wiki/Grace_Hopper">Grace</a>'
         )
         self.assertEqual(
-            data['documents'][0]['sections'][0]['properties']['llama'], "<p>it's been <a href=\"spotted.html\">spotted</a></p>"
+            data['documents'][0]['sections'][0]['properties']['llama'], "it's been <a href=\"spotted.html\">spotted</a>"
         )
 
     def test_output_refdex(self):
