@@ -132,13 +132,17 @@ class TestFeedmarkCommandLine(unittest.TestCase):
             data['documents'][0]['properties']['hopper'],
             '<a href="https://en.wikipedia.org/wiki/Stephen_Hopper">Stephen</a>'
         )
-        self.assertEqual(data['documents'][0]['properties']['llama'], 'has been <a href="spotted.html">spotted</a>')
+        self.assertEqual(
+            data['documents'][0]['properties']['spotted'],
+            [u'<a href="mall.html">the mall</a>', u'<a href="beach.html">the beach</a>']
+        )
         self.assertEqual(
             data['documents'][0]['sections'][0]['properties']['hopper'],
             '<a href="https://en.wikipedia.org/wiki/Grace_Hopper">Grace</a>'
         )
         self.assertEqual(
-            data['documents'][0]['sections'][0]['properties']['llama'], "it's been <a href=\"spotted.html\">spotted</a>"
+            data['documents'][0]['sections'][0]['properties']['spotted'],
+            [u'<a href="mall.html">the mall</a>', u'<a href="lumberyard.html">the lumberyard</a>']
         )
 
     def test_output_refdex(self):
