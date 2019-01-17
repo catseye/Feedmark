@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 
+from collections import OrderedDict
 import re
 
 from feedmark.utils import items_in_priority_order, unicode
@@ -25,6 +26,8 @@ def markdown_to_html5(text, reference_links=None):
 def markdown_to_html5_deep(obj, **kwargs):
     if obj is None:
         return None
+    elif isinstance(obj, OrderedDict):
+        return OrderedDict((k, markdown_to_html5_deep(v, **kwargs)) for k, v in obj.items())
     elif isinstance(obj, dict):
         return dict((k, markdown_to_html5_deep(v, **kwargs)) for k, v in obj.items())
     elif isinstance(obj, list):
