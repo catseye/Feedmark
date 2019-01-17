@@ -2,6 +2,7 @@
 # encoding: UTF-8
 
 from datetime import datetime
+from collections import OrderedDict
 import re
 
 from feedmark.formats.markdown import markdown_to_html5, markdown_to_html5_deep
@@ -32,7 +33,7 @@ def rewrite_reference_links(refdex, reference_links):
 class Document(object):
     def __init__(self, title):
         self.title = title
-        self.properties = {}
+        self.properties = OrderedDict()
 
         self.preamble = None
         self.sections = []
@@ -54,8 +55,7 @@ class Document(object):
 
     def to_json_data(self, **kwargs):
 
-        htmlize = kwargs.get('htmlize', False)
-        if htmlize:
+        if kwargs.get('htmlize', False):
             if 'reference_links' not in kwargs:
                 kwargs['reference_links'] = self.global_reference_links()
             preamble = markdown_to_html5(self.preamble, reference_links=kwargs['reference_links'])
@@ -63,6 +63,14 @@ class Document(object):
         else:
             preamble = self.preamble
             properties = self.properties
+
+        if kwargs.get('ordered', False):
+            properties_list = []
+            for key, value in properties.items():
+                properties_list.append([key, value])
+            properties = properties_list
+        else:
+            properties = dict(properties)
 
         return {
             'filename': self.filename,
@@ -77,7 +85,7 @@ class Section(object):
     def __init__(self, title):
         self.document = None
         self.title = title
-        self.properties = {}
+        self.properties = OrderedDict()
 
         self.lines = []
 
@@ -86,12 +94,6 @@ class Section(object):
         if self.document:
             s += " of " + str(self.document)
         return s
-
-    def add_line(self, line):
-        self.lines.append(line.rstrip())
-
-    def set(self, key, value):
-        self.properties[key] = value
 
     @property
     def body(self):
@@ -120,13 +122,20 @@ class Section(object):
 
     def to_json_data(self, **kwargs):
 
-        htmlize = kwargs.get('htmlize', False)
-        if htmlize:
+        if kwargs.get('htmlize', False):
             body = markdown_to_html5(self.body, reference_links=kwargs['reference_links'])
             properties = markdown_to_html5_deep(self.properties, reference_links=kwargs['reference_links'])
         else:
             body = self.body
             properties = self.properties
+
+        if kwargs.get('ordered', False):
+            properties_list = []
+            for key, value in properties.items():
+                properties_list.append([key, value])
+            properties = properties_list
+        else:
+            properties = dict(properties)
 
         return {
             'title': self.title,
@@ -214,7 +223,7 @@ class Parser(object):
         raise ValueError('Expected property')
 
     def parse_properties(self):
-        properties = {}
+        properties = OrderedDict()
         while self.is_blank_line() or self.is_property_line():
             if self.is_property_line():
                 kind, key, val = self.parse_property()

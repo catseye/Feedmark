@@ -145,6 +145,26 @@ class TestFeedmarkCommandLine(unittest.TestCase):
             [u'<a href="mall.html">the mall</a>', u'<a href="lumberyard.html">the lumberyard</a>']
         )
 
+    def test_output_unordered_json(self):
+        main(['eg/Ancient Llama Sightings.md', '--output-json'])
+        data = json.loads(sys.stdout.getvalue())
+        properties = data['documents'][0]['properties']
+        self.assertDictEqual(properties, {
+            'author': 'Alfred J. Prufrock',
+            'link-target-url': 'https://github.com/catseye/Feedmark/blob/master/eg/Ancient%20Llama%20Sightings.md',
+            'url': 'http://example.com/old_llama.xml'
+        })
+
+    def test_output_ordered_json(self):
+        main(['eg/Ancient Llama Sightings.md', '--output-json', '--ordered-json'])
+        data = json.loads(sys.stdout.getvalue())
+        properties = data['documents'][0]['properties']
+        self.assertEqual(properties, [
+            [u'author', u'Alfred J. Prufrock'],
+            [u'url', u'http://example.com/old_llama.xml'],
+            [u'link-target-url', u'https://github.com/catseye/Feedmark/blob/master/eg/Ancient%20Llama%20Sightings.md'],
+        ])
+
     def test_output_refdex(self):
         main(['eg/Recent Llama Sightings.md', 'eg/Ancient Llama Sightings.md', '--output-refdex'])
         data = json.loads(sys.stdout.getvalue())

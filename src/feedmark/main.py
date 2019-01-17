@@ -28,6 +28,10 @@ def main(args):
     argparser.add_argument('--htmlized-json', action='store_true',
         help='When outputting JSON, convert Markdown fields (preamble, section bodies, etc) to HTML5'
     )
+    argparser.add_argument('--ordered-json', action='store_true',
+        help='When outputting JSON, generate properties as lists that preserve the order '
+             'from the source Feedmark document, instead of as unordered objects'
+    )
 
     argparser.add_argument('--output-links', action='store_true',
         help='Output JSON containing all web links extracted from the entries'
@@ -140,6 +144,7 @@ def main(args):
     if options.output_json:
         json_options = {
             'htmlize': options.htmlized_json,
+            'ordered': options.ordered_json,
         }
         output_json = {
             'documents': [d.to_json_data(**json_options) for d in documents]
