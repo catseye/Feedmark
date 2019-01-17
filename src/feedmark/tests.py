@@ -146,23 +146,35 @@ class TestFeedmarkCommandLine(unittest.TestCase):
         )
 
     def test_output_unordered_json(self):
-        main(['eg/Ancient Llama Sightings.md', '--output-json'])
+        main(['eg/Referenced Llama Sightings.md', '--output-json'])
         data = json.loads(sys.stdout.getvalue())
-        properties = data['documents'][0]['properties']
-        self.assertDictEqual(properties, {
-            'author': 'Alfred J. Prufrock',
-            'link-target-url': 'https://github.com/catseye/Feedmark/blob/master/eg/Ancient%20Llama%20Sightings.md',
-            'url': 'http://example.com/old_llama.xml'
+        self.assertDictEqual(data['documents'][0]['properties'], {
+            u'author': u'Alfred J. Prufrock',
+            u'link-target-url': u'https://github.com/catseye/Feedmark/blob/master/eg/Referenced%20Llama%20Sightings.md',
+            u'url': u'http://example.com/refllama.xml',
+            u'hopper': u'[Stephen](https://en.wikipedia.org/wiki/Stephen_Hopper)',
+            u'spotted': [u'[the mall][]', u'[the beach](beach.html)'],
+        })
+        self.assertDictEqual(data['documents'][0]['sections'][0]['properties'], {
+            u'date': u'Nov 1 2016 09:00:00',
+            u'hopper': u'[Grace](https://en.wikipedia.org/wiki/Grace_Hopper)',
+            u'spotted': [u'[the mall][]', u'[the lumberyard](lumberyard.html)'],
         })
 
     def test_output_ordered_json(self):
-        main(['eg/Ancient Llama Sightings.md', '--output-json', '--ordered-json'])
+        main(['eg/Referenced Llama Sightings.md', '--output-json', '--ordered-json'])
         data = json.loads(sys.stdout.getvalue())
-        properties = data['documents'][0]['properties']
-        self.assertEqual(properties, [
+        self.assertEqual(data['documents'][0]['properties'], [
             [u'author', u'Alfred J. Prufrock'],
-            [u'url', u'http://example.com/old_llama.xml'],
-            [u'link-target-url', u'https://github.com/catseye/Feedmark/blob/master/eg/Ancient%20Llama%20Sightings.md'],
+            [u'url', u'http://example.com/refllama.xml'],
+            [u'link-target-url', u'https://github.com/catseye/Feedmark/blob/master/eg/Referenced%20Llama%20Sightings.md'],
+            [u'hopper', u'[Stephen](https://en.wikipedia.org/wiki/Stephen_Hopper)'],
+            [u'spotted', [u'[the mall][]', u'[the beach](beach.html)']],
+        ])
+        self.assertEqual(data['documents'][0]['sections'][0]['properties'], [
+            [u'date', u'Nov 1 2016 09:00:00'],
+            [u'hopper', u'[Grace](https://en.wikipedia.org/wiki/Grace_Hopper)'],
+            [u'spotted', [u'[the mall][]', u'[the lumberyard](lumberyard.html)']]
         ])
 
     def test_output_refdex(self):
