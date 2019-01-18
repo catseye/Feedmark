@@ -102,6 +102,7 @@ class TestFeedmarkCommandLine(unittest.TestCase):
                 u'images': [],
                 u'properties': {u'date': u'Jan 1 1984 12:00:00'},
                 u'title': u'Maybe sighting the llama',
+                u'anchor': u'maybe-sighting-the-llama',
             }
         ])
         self.assertIn(u'It was a possible llama sighting.\n\n', data['documents'][0]['sections'][0]['body'])

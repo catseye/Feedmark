@@ -139,6 +139,7 @@ class Section(object):
 
         return {
             'title': self.title,
+            'anchor': self.anchor,
             'images': self.images,
             'properties': properties,
             'body': body,
