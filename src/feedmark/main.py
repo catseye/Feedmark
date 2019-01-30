@@ -25,6 +25,13 @@ def main(args):
     argparser.add_argument('--output-json', action='store_true',
         help='Output JSON containing entries on standard output'
     )
+    argparser.add_argument('--htmlized-json', action='store_true',
+        help='When outputting JSON, convert Markdown fields (preamble, section bodies, etc) to HTML5'
+    )
+    argparser.add_argument('--ordered-json', action='store_true',
+        help='When outputting JSON, generate properties as lists that preserve the order '
+             'from the source Feedmark document, instead of as unordered objects'
+    )
 
     argparser.add_argument('--output-links', action='store_true',
         help='Output JSON containing all web links extracted from the entries'
@@ -135,25 +142,13 @@ def main(args):
                         print(u'    {}: {}'.format(key, value))
 
     if options.output_json:
-        output_json = {
-            'documents': []
+        json_options = {
+            'htmlize': options.htmlized_json,
+            'ordered': options.ordered_json,
         }
-        for document in documents:
-            document_json = {
-                'filename': document.filename,
-                'title': document.title,
-                'properties': document.properties,
-                'preamble': document.preamble,
-                'sections': [],
-            }
-            for section in document.sections:
-                document_json['sections'].append({
-                    'title': section.title,
-                    'images': section.images,
-                    'properties': section.properties,
-                    'body': section.body,
-                })
-            output_json['documents'].append(document_json)
+        output_json = {
+            'documents': [d.to_json_data(**json_options) for d in documents]
+        }
         sys.stdout.write(json.dumps(output_json, indent=4, sort_keys=True))
 
     if options.by_publication_date:

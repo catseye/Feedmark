@@ -1,6 +1,15 @@
 History of Feedmark
 ===================
 
+0.8
+---
+
+*   Added `--htmlized-json` option which, when using `--output-json`,
+    converts Markdown to HTML5 every place it is present in the JSON.
+*   Added `--ordered-json` option which, when using `--output-json`,
+    serializes the properties (of the document and of each section)
+    as an array of two-element arrays, instead of a JSON object.
+
 0.7
 ---
 

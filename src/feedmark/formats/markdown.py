@@ -1,12 +1,39 @@
 from __future__ import absolute_import
 
-from feedmark.utils import items_in_priority_order
+from collections import OrderedDict
+import re
+
+from feedmark.utils import items_in_priority_order, unicode
 
 
-def markdown_to_html5(text):
+def remove_outer_p(html):
+    match = re.match(r'^\s*\<\s*p\s*\>\s*(.*?)\s*\<\s*/\s*p\s*\>\s*$', html)
+    if match:
+        html = match.group(1)
+    return html
+
+
+def markdown_to_html5(text, reference_links=None):
     """Canonical function used within `feedmark` to convert Markdown text to a HTML5 snippet."""
     from markdown import markdown
+
+    if reference_links:
+        text += markdownize_reference_links(reference_links)
+
     return markdown(text, extensions=['markdown.extensions.toc'])
+
+
+def markdown_to_html5_deep(obj, **kwargs):
+    if obj is None:
+        return None
+    elif isinstance(obj, OrderedDict):
+        return OrderedDict((k, markdown_to_html5_deep(v, **kwargs)) for k, v in obj.items())
+    elif isinstance(obj, dict):
+        return dict((k, markdown_to_html5_deep(v, **kwargs)) for k, v in obj.items())
+    elif isinstance(obj, list):
+        return [markdown_to_html5_deep(subobj, **kwargs) for subobj in obj]
+    else:
+        return remove_outer_p(markdown_to_html5(unicode(obj), **kwargs))
 
 
 def markdownize_properties(properties, property_priority_order):

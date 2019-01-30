@@ -102,9 +102,81 @@ class TestFeedmarkCommandLine(unittest.TestCase):
                 u'images': [],
                 u'properties': {u'date': u'Jan 1 1984 12:00:00'},
                 u'title': u'Maybe sighting the llama',
+                u'anchor': u'maybe-sighting-the-llama',
             }
         ])
         self.assertIn(u'It was a possible llama sighting.\n\n', data['documents'][0]['sections'][0]['body'])
+
+    def test_output_htmlized_json(self):
+        main(['eg/Referenced Llama Sightings.md', '--output-json', '--htmlized-json'])
+        data = json.loads(sys.stdout.getvalue())
+        self.assertDictEqual(data, {
+            u'documents': [
+                {
+                    u'filename': u'eg/Referenced Llama Sightings.md',
+                    u'title': u'Referenced Llama Sightings',
+                    u'preamble': u'<p>Some <strong>llamas</strong> have been <a href="spotted.html">spotted</a> recently.</p>',
+                    u'properties': data['documents'][0]['properties'],
+                    u'sections': data['documents'][0]['sections'],
+                }
+            ]
+        })
+        self.assertEqual(
+            data['documents'][0]['sections'][0]['body'],
+            u"<p>I have strong opinions about this.  It's a <em>shame</em> more llamas aren't\nbeing spotted.  "
+             "Sometimes they are <strong>striped</strong>, it's true, but<br />\nwhen<br />\nthey are, "
+             "<a href=\"https://daringfireball.net/projects/markdown/\">Markdown</a>\ncan be used.</p>\n"
+             "<p>To <a href=\"https://en.wikipedia.org/wiki/Site\">site</a> them.</p>\n<p>Sight them, sigh.</p>"
+        )
+        # note that property values are bare HTML: there is no surrounding <p></p> or other element
+        self.assertEqual(
+            data['documents'][0]['properties']['hopper'],
+            '<a href="https://en.wikipedia.org/wiki/Stephen_Hopper">Stephen</a>'
+        )
+        self.assertEqual(
+            data['documents'][0]['properties']['spotted'],
+            [u'<a href="mall.html">the mall</a>', u'<a href="beach.html">the beach</a>']
+        )
+        self.assertEqual(
+            data['documents'][0]['sections'][0]['properties']['hopper'],
+            '<a href="https://en.wikipedia.org/wiki/Grace_Hopper">Grace</a>'
+        )
+        self.assertEqual(
+            data['documents'][0]['sections'][0]['properties']['spotted'],
+            [u'<a href="mall.html">the mall</a>', u'<a href="lumberyard.html">the lumberyard</a>']
+        )
+
+    def test_output_unordered_json(self):
+        main(['eg/Referenced Llama Sightings.md', '--output-json'])
+        data = json.loads(sys.stdout.getvalue())
+        self.assertDictEqual(data['documents'][0]['properties'], {
+            u'author': u'Alfred J. Prufrock',
+            u'link-target-url': u'https://github.com/catseye/Feedmark/blob/master/eg/Referenced%20Llama%20Sightings.md',
+            u'url': u'http://example.com/refllama.xml',
+            u'hopper': u'[Stephen](https://en.wikipedia.org/wiki/Stephen_Hopper)',
+            u'spotted': [u'[the mall][]', u'[the beach](beach.html)'],
+        })
+        self.assertDictEqual(data['documents'][0]['sections'][0]['properties'], {
+            u'date': u'Nov 1 2016 09:00:00',
+            u'hopper': u'[Grace](https://en.wikipedia.org/wiki/Grace_Hopper)',
+            u'spotted': [u'[the mall][]', u'[the lumberyard](lumberyard.html)'],
+        })
+
+    def test_output_ordered_json(self):
+        main(['eg/Referenced Llama Sightings.md', '--output-json', '--ordered-json'])
+        data = json.loads(sys.stdout.getvalue())
+        self.assertEqual(data['documents'][0]['properties'], [
+            [u'author', u'Alfred J. Prufrock'],
+            [u'url', u'http://example.com/refllama.xml'],
+            [u'link-target-url', u'https://github.com/catseye/Feedmark/blob/master/eg/Referenced%20Llama%20Sightings.md'],
+            [u'hopper', u'[Stephen](https://en.wikipedia.org/wiki/Stephen_Hopper)'],
+            [u'spotted', [u'[the mall][]', u'[the beach](beach.html)']],
+        ])
+        self.assertEqual(data['documents'][0]['sections'][0]['properties'], [
+            [u'date', u'Nov 1 2016 09:00:00'],
+            [u'hopper', u'[Grace](https://en.wikipedia.org/wiki/Grace_Hopper)'],
+            [u'spotted', [u'[the mall][]', u'[the lumberyard](lumberyard.html)']]
+        ])
 
     def test_output_refdex(self):
         main(['eg/Recent Llama Sightings.md', 'eg/Ancient Llama Sightings.md', '--output-refdex'])
