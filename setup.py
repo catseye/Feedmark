@@ -9,4 +9,5 @@ setup(
     author_email='packages@catseye.tc',
     packages=['feedmark'],
     package_dir={'': 'src'},
+    scripts=['bin/feedmark'],
 )
