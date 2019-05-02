@@ -6,9 +6,12 @@
 #        feedmark "eg/Ancient Llama Sightings.md" --output-atom samplefeed.xml
 #
 
-rm -rf src/feedmark/*.pyc src/feedmark/__pycache__
+PROJECT=feedmark
+VERSION=0.9
+
+rm -rf src/${PROJECT}/*.pyc src/${PROJECT}/__pycache__
 docker container prune
-docker rmi catseye/feedmark:0.8
-docker rmi feedmark
-docker build -t feedmark .
-docker tag feedmark catseye/feedmark:0.8
+docker rmi catseye/${PROJECT}:${VERSION}
+docker rmi ${PROJECT}
+docker build -t ${PROJECT} .
+docker tag ${PROJECT} catseye/${PROJECT}:${VERSION}

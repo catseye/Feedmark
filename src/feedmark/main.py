@@ -73,6 +73,8 @@ def main(args):
         help='Process no more than this many entries when making an Atom or HTML feed'
     )
 
+    argparser.add_argument('--version', action='version', version="%(prog)s 0.9")
+
     options = argparser.parse_args(args)
 
     documents = []

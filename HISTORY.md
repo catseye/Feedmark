@@ -1,6 +1,13 @@
 History of Feedmark
 ===================
 
+0.9
+---
+
+*   Added conventional `--version` option to `feedmark`.
+*   Added support for creating a Docker image from which `feedmark`
+    can run.
+
 0.8
 ---
 
