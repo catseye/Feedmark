@@ -8,4 +8,5 @@ setup(
     author='Chris Pressey',
     author_email='packages@catseye.tc',
     packages=['feedmark'],
+    package_dir={'': 'src'},
 )
