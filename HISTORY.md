@@ -5,8 +5,6 @@ History of Feedmark
 ---
 
 *   Added conventional `--version` option to `feedmark`.
-*   Added support for creating a Docker image from which `feedmark`
-    can run.
 *   Added `setup.py` so that Feedmark can be treated as a Python
     package.
 
