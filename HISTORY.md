@@ -1,6 +1,13 @@
 History of Feedmark
 ===================
 
+0.9
+---
+
+*   Added conventional `--version` option to `feedmark`.
+*   Added `setup.py` so that Feedmark can be treated as a Python
+    package.
+
 0.8
 ---
 
