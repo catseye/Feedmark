@@ -33,10 +33,18 @@ Implementation
 This repository contains a Python program, `feedmark`, which is a
 reference implementation of a processor for the Feedmark format.
 
-It is in the `bin` directory, and can be run directly from there,
-or `bin` can be put on your search path.
+To use it, you can clone this repository and run it as `bin/feedmark`
+from the directory of your clone, or you can put the `bin` directory
+on your executable search path, and run it as `feedmark` anywhere.
 
-It is currently able to do the following things:
+Or you can install it using `pip`:
+
+    pip install -e git://github.com/catseye/Feedmark.git@0.9#egg=feedmark
+
+(Depending on your needs, you may wish to establish a virtual environment
+first.)
+
+`feedmark` is currently able to do the following things:
 
 ### Parse and check Feedmark documents
 
