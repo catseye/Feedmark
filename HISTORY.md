@@ -1,6 +1,11 @@
 History of Feedmark
 ===================
 
+0.9-2019.105
+------------
+
+*   Minor release to work out issues with `setup.py`.
+
 0.9
 ---
 
