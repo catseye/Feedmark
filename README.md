@@ -39,10 +39,10 @@ on your executable search path, and run it as `feedmark` anywhere.
 
 Or you can install it using `pip`:
 
-    pip install -e git://github.com/catseye/Feedmark.git@0.9#egg=feedmark
+    pip install Feedmark==0.9
 
 (Depending on your needs, you may wish to establish a virtual environment
-first.)
+first.  How to do this is outside the scope of this document.)
 
 `feedmark` is currently able to do the following things:
 
