@@ -6,14 +6,14 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name='Feedmark',
-    version='0.9',
+    version='0.9.2019.1015',
     description='Definition of Feedmark, a curation-oriented subset of Markdown, and tools for processing it',
     long_description=long_description,
     long_description_content_type="text/markdown",
     author='Chris Pressey',
     author_email='packages@catseye.tc',
     url='https://catseye.tc/node/Feedmark',
-    packages=['feedmark'],
+    packages=['feedmark', 'feedmark.formats'],
     package_dir={'': 'src'},
     scripts=['bin/feedmark'],
     classifiers=[
