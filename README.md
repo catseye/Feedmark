@@ -109,6 +109,9 @@ See also
 Feedmark is a subset of Markdown, which is something it has in common
 with [Falderal][], however it has decidedly different goals.
 
+See [TODO.md](TODO.md) for planned features and [HISTORY.md](HISTORY.md)
+for a record of features added in past versions.
+
 [Falderal]: http://catseye.tc/node/Falderal
 [Chrysoberyl]: http://git.catseye.tc/Chrysoberyl/
 [The Dossier]: http://git.catseye.tc/The-Dossier/
