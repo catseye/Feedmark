@@ -1,6 +1,11 @@
 History of Feedmark
 ===================
 
+0.10
+----
+
+*   Allow trailing `###` on h3-level section headers.
+
 0.9-2019.105
 ------------
 

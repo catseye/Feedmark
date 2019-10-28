@@ -244,7 +244,7 @@ class Parser(object):
         while self.is_blank_line():
             self.scan()
 
-        match = re.match(r'^\#\#\#\s+(.*?)\s*$', self.line)
+        match = re.match(r'^\#\#\#\s+(.*?)\s*(\#\#\#)?\s*$', self.line)
         if not match:
             raise ValueError('Expected section, found "{}"'.format(self.line))
 
