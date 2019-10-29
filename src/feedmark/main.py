@@ -62,11 +62,14 @@ def main(args):
     argparser.add_argument('--input-refdexes', metavar='FILENAME', type=str,
         help='Load these JSON files as the reference-style links index before processing'
     )
+    argparser.add_argument('--input-refdex-filename-prefix', type=str, default=None,
+        help='After loading refdexes, prepend this to filename of each refdex'
+    )
     argparser.add_argument('--output-refdex', action='store_true',
         help='Construct reference-style links index from the entries and write it to stdout as JSON'
     )
-    argparser.add_argument('--input-refdex-filename-prefix', type=str, default=None,
-        help='After loading refdexes, prepend this to filename of each refdex'
+    argparser.add_argument('--output-refdex-index', action='store_true',
+        help='Construct a Markdown document from resulting refdex and write it to stdout'
     )
 
     argparser.add_argument('--limit', metavar='COUNT', type=int, default=None,
@@ -107,10 +110,10 @@ def main(args):
             sys.exit(1)
 
     ### processing: collect refdex phase
-    # NOTE: we only run this if we were asked to output a refdex -
+    # NOTE: we only run this if we were asked to output a refdex or an index-
     # this is to prevent scurrilous insertion of refdex entries when rewriting.
 
-    if options.output_refdex:
+    if options.output_refdex or options.output_refdex_index:
         for document in documents:
             for section in document.sections:
                 refdex[section.title] = {
@@ -128,6 +131,11 @@ def main(args):
 
     if options.output_refdex:
         sys.stdout.write(json.dumps(refdex, indent=4, sort_keys=True))
+
+    if options.output_refdex_index:
+        from feedmark.formats.markdown import generate_index_from_refdex
+        index_contents = generate_index_from_refdex(refdex)
+        sys.stdout.write(index_contents)
 
     if options.dump_entries:
         for document in documents:

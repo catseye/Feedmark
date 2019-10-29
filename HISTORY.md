@@ -4,7 +4,9 @@ History of Feedmark
 0.10
 ----
 
-*   Allow trailing `###` on h3-level section headers.
+*   Added `--output-refdex-index` option, which outputs the
+    refdex as a sorted list of entries in Markdown format.
+*   Parser now allows trailing `###` on h3-level section headers.
 
 0.9-2019.105
 ------------
