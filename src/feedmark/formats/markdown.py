@@ -85,17 +85,3 @@ def feedmark_markdownize(document, schema=None):
 
 def feedmark_htmlize(document, *args, **kwargs):
     return markdown_to_html5(feedmark_markdownize(document, *args, **kwargs))
-
-
-def generate_index_from_refdex(refdex):
-    x = u''
-    for k, v in sorted(refdex.items()):
-        x += u"### {}\n\n".format(k)
-        if 'url' in v:
-            x += u"*   [{}]({})\n\n".format(v['url'], v['url'])
-        elif 'anchor' in v:
-            link = u"{}#{}".format(v['filename'], v['anchor'])
-            x += u"*   [{}]({})\n\n".format(link, link)
-        else:
-            raise NotImplementedError
-    return x

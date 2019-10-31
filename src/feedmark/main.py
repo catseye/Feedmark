@@ -2,7 +2,10 @@ from argparse import ArgumentParser
 import json
 import sys
 
-from feedmark.loader import read_document_from, read_refdex_from
+from feedmark.loader import (
+    read_document_from, read_refdex_from,
+    convert_single_refdex_to_multi_refdex, convert_multi_refdex_to_single_refdex
+)
 from feedmark.utils import items
 
 
@@ -68,15 +71,15 @@ def main(args):
     argparser.add_argument('--output-refdex', action='store_true',
         help='Construct reference-style links index from the entries and write it to stdout as JSON'
     )
-    argparser.add_argument('--output-refdex-index', action='store_true',
-        help='Construct a Markdown document from resulting refdex and write it to stdout'
+    argparser.add_argument('--output-multi-refdex', action='store_true',
+        help='Construct multiple-reference-style links index from the entries and write it to stdout as JSON'
     )
 
     argparser.add_argument('--limit', metavar='COUNT', type=int, default=None,
         help='Process no more than this many entries when making an Atom or HTML feed'
     )
 
-    argparser.add_argument('--version', action='version', version="%(prog)s 0.9")
+    argparser.add_argument('--version', action='version', version="%(prog)s 0.10")
 
     options = argparser.parse_args(args)
 
@@ -88,6 +91,8 @@ def main(args):
         document = read_document_from(filename)
         documents.append(document)
 
+    ### input: load input refdexes
+
     input_refdexes = []
     if options.input_refdex:
         input_refdexes.append(options.input_refdex)
@@ -95,7 +100,9 @@ def main(args):
         for input_refdex in options.input_refdexes.split(','):
             input_refdexes.append(input_refdex.strip())
 
-    refdex = read_refdex_from(input_refdexes, input_refdex_filename_prefix=options.input_refdex_filename_prefix)
+    multi_refdex = convert_single_refdex_to_multi_refdex(
+        read_refdex_from(input_refdexes, input_refdex_filename_prefix=options.input_refdex_filename_prefix)
+    )
 
     ### processing
 
@@ -113,29 +120,33 @@ def main(args):
     # NOTE: we only run this if we were asked to output a refdex or an index-
     # this is to prevent scurrilous insertion of refdex entries when rewriting.
 
-    if options.output_refdex or options.output_refdex_index:
+    if options.output_refdex or options.output_multi_refdex:
         for document in documents:
             for section in document.sections:
-                refdex[section.title] = {
-                    'filename': document.filename,
-                    'anchor': section.anchor
-                }
+                if section.title in multi_refdex:
+                    entry = multi_refdex[section.title]
+                    if entry['anchor'] != section.anchor:
+                        raise ValueError("Inconsistent anchors: {} in refex, {} in document".format(entry['anchor'], section.anchor))
+                    entry['filenames'].append(document.filename)
+                else:
+                    multi_refdex[section.title] = {
+                        'filenames': [document.filename],
+                        'anchor': section.anchor
+                    }
 
     ### processing: rewrite references phase
 
-    if refdex:
+    if multi_refdex:
         for document in documents:
-            document.rewrite_reference_links(refdex)
+            document.rewrite_reference_links(multi_refdex)
 
     ### output
 
     if options.output_refdex:
-        sys.stdout.write(json.dumps(refdex, indent=4, sort_keys=True))
+        sys.stdout.write(json.dumps(convert_multi_refdex_to_single_refdex(multi_refdex), indent=4, sort_keys=True))
 
-    if options.output_refdex_index:
-        from feedmark.formats.markdown import generate_index_from_refdex
-        index_contents = generate_index_from_refdex(refdex)
-        sys.stdout.write(index_contents)
+    if options.output_multi_refdex:
+        sys.stdout.write(json.dumps(multi_refdex, indent=4, sort_keys=True))
 
     if options.dump_entries:
         for document in documents:

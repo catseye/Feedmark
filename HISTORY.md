@@ -4,8 +4,8 @@ History of Feedmark
 0.10
 ----
 
-*   Added `--output-refdex-index` option, which outputs the
-    refdex as a sorted list of entries in Markdown format.
+*   Added `--output-multi-refdex` option, which outputs a
+    refdex which may contain multiple filenames in each entry.
 *   Parser now allows trailing `###` on h3-level section headers.
 
 0.9-2019.105

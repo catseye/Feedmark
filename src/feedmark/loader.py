@@ -56,3 +56,31 @@ def read_refdex_from(filenames, input_refdex_filename_prefix=None):
             raise
 
     return refdex
+
+
+def convert_single_refdex_to_multi_refdex(refdex):
+    """Note that this makes a partially shallow copy."""
+    multi_refdex = {}
+    for key, value in refdex.items():
+        if 'filename' in value:
+            multi_refdex[key] = {
+                'filenames': [value['filename']],
+                'anchor': value['anchor']
+            }
+        else:
+            multi_refdex[key] = value
+    return multi_refdex
+
+
+def convert_multi_refdex_to_single_refdex(multi_refdex):
+    """Note that this makes a partially shallow copy."""
+    refdex = {}
+    for key, value in multi_refdex.items():
+        if 'filenames' in value:
+            refdex[key] = {
+                'filename': value['filenames'][-1],
+                'anchor': value['anchor']
+            }
+        else:
+            refdex[key] = value
+    return refdex
