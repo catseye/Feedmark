@@ -9,16 +9,20 @@ from feedmark.formats.markdown import markdown_to_html5, markdown_to_html5_deep
 from feedmark.utils import quote
 
 
-def rewrite_reference_links(multi_refdex, reference_links):
+def rewrite_reference_links(refdex, reference_links):
     new_reference_links = []
     seen_names = set()
     for (name, url) in reference_links:
         if name in seen_names:
             continue
         seen_names.add(name)
-        if name in multi_refdex:
-            entry = multi_refdex[name]
-            if 'filenames' in entry and 'anchor' in entry:
+        if name in refdex:
+            entry = refdex[name]
+            if 'filename' in entry and 'anchor' in entry:
+                filename = quote(entry['filename'].encode('utf-8'))
+                anchor = quote(entry['anchor'].encode('utf-8'))
+                url = u'{}#{}'.format(filename, anchor)
+            elif 'filenames' in entry and 'anchor' in entry:
                 # pick the last one, for compatibility with single-refdex style
                 filename = quote(entry['filenames'][-1].encode('utf-8'))
                 anchor = quote(entry['anchor'].encode('utf-8'))
@@ -42,10 +46,10 @@ class Document(object):
     def __str__(self):
         return "document '{}'".format(self.title.encode('utf-8'))
 
-    def rewrite_reference_links(self, multi_refdex):
-        self.reference_links = rewrite_reference_links(multi_refdex, self.reference_links)
+    def rewrite_reference_links(self, refdex):
+        self.reference_links = rewrite_reference_links(refdex, self.reference_links)
         for section in self.sections:
-            section.reference_links = rewrite_reference_links(multi_refdex, section.reference_links)
+            section.reference_links = rewrite_reference_links(refdex, section.reference_links)
 
     def global_reference_links(self):
         reference_links = []

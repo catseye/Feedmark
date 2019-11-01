@@ -4,8 +4,12 @@ History of Feedmark
 0.10
 ----
 
-*   Added `--output-multi-refdex` option, which outputs a
-    refdex which may contain multiple filenames in each entry.
+*   Format of refdex files has changed: an entry can now have a
+    key `filenames`, which is like `filename`, but can be a list.
+    This is backwards-compatible on input, and you can pass the
+    flag `--output-refdex-single-filename` to cause the output
+    from `--output-refdex` to strip all but the last filename
+    and produce only `filename` entries on output.
 *   Parser now allows trailing `###` on h3-level section headers.
 
 0.9-2019.105

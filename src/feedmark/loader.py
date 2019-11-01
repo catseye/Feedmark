@@ -25,6 +25,8 @@ def read_refdex_from(filenames, input_refdex_filename_prefix=None):
                     for key, value in items(local_refdex):
                         if 'filename' in value:
                             value['filename'] = input_refdex_filename_prefix + value['filename']
+                        if 'filenames' in value:
+                            value['filenames'] = [input_refdex_filename_prefix + f for f in value['filenames']]
                 refdex.update(local_refdex)
         except:
             sys.stderr.write("Could not read refdex JSON from '{}'\n".format(filename))
@@ -49,6 +51,13 @@ def read_refdex_from(filenames, input_refdex_filename_prefix=None):
                 value['filename'].encode('utf-8')
                 assert isinstance(value['anchor'], unicode_string)
                 value['anchor'].encode('utf-8')
+            elif 'filenames' in value and 'anchor' in value:
+                assert len(value) == 2
+                for filename in value['filenames']:
+                    assert isinstance(value, unicode_string)
+                    filename.encode('utf-8')
+                assert isinstance(value['anchor'], unicode_string)
+                value['anchor'].encode('utf-8')
             else:
                 raise NotImplementedError("badly formed refdex")
         except:
@@ -58,24 +67,10 @@ def read_refdex_from(filenames, input_refdex_filename_prefix=None):
     return refdex
 
 
-def convert_single_refdex_to_multi_refdex(refdex):
-    """Note that this makes a partially shallow copy."""
-    multi_refdex = {}
-    for key, value in refdex.items():
-        if 'filename' in value:
-            multi_refdex[key] = {
-                'filenames': [value['filename']],
-                'anchor': value['anchor']
-            }
-        else:
-            multi_refdex[key] = value
-    return multi_refdex
-
-
-def convert_multi_refdex_to_single_refdex(multi_refdex):
+def convert_refdex_to_single_filename_refdex(input_refdex):
     """Note that this makes a partially shallow copy."""
     refdex = {}
-    for key, value in multi_refdex.items():
+    for key, value in input_refdex.items():
         if 'filenames' in value:
             refdex[key] = {
                 'filename': value['filenames'][-1],

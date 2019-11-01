@@ -3,8 +3,7 @@ import json
 import sys
 
 from feedmark.loader import (
-    read_document_from, read_refdex_from,
-    convert_single_refdex_to_multi_refdex, convert_multi_refdex_to_single_refdex
+    read_document_from, read_refdex_from, convert_refdex_to_single_filename_refdex,
 )
 from feedmark.utils import items
 
@@ -71,8 +70,9 @@ def main(args):
     argparser.add_argument('--output-refdex', action='store_true',
         help='Construct reference-style links index from the entries and write it to stdout as JSON'
     )
-    argparser.add_argument('--output-multi-refdex', action='store_true',
-        help='Construct multiple-reference-style links index from the entries and write it to stdout as JSON'
+    argparser.add_argument('--output-refdex-single-filename', action='store_true',
+        help='When outputting a refdex, ensure that only entries with a single filename are '
+             'output, by stripping all but the last filename from multiple filenames entries.'
     )
 
     argparser.add_argument('--limit', metavar='COUNT', type=int, default=None,
@@ -100,9 +100,7 @@ def main(args):
         for input_refdex in options.input_refdexes.split(','):
             input_refdexes.append(input_refdex.strip())
 
-    multi_refdex = convert_single_refdex_to_multi_refdex(
-        read_refdex_from(input_refdexes, input_refdex_filename_prefix=options.input_refdex_filename_prefix)
-    )
+    refdex = read_refdex_from(input_refdexes, input_refdex_filename_prefix=options.input_refdex_filename_prefix)
 
     ### processing
 
@@ -117,36 +115,38 @@ def main(args):
             sys.exit(1)
 
     ### processing: collect refdex phase
-    # NOTE: we only run this if we were asked to output a refdex or an index-
+    # NOTE: we only run this if we were asked to output a refdex -
     # this is to prevent scurrilous insertion of refdex entries when rewriting.
 
-    if options.output_refdex or options.output_multi_refdex:
+    if options.output_refdex:
         for document in documents:
             for section in document.sections:
-                if section.title in multi_refdex:
-                    entry = multi_refdex[section.title]
+                if section.title in refdex:
+                    entry = refdex[section.title]
                     if entry['anchor'] != section.anchor:
                         raise ValueError("Inconsistent anchors: {} in refex, {} in document".format(entry['anchor'], section.anchor))
+                    if 'filename' in entry:
+                        entry['filenames'] = []
+                        del entry['filename']
                     entry['filenames'].append(document.filename)
                 else:
-                    multi_refdex[section.title] = {
+                    refdex[section.title] = {
                         'filenames': [document.filename],
                         'anchor': section.anchor
                     }
 
     ### processing: rewrite references phase
 
-    if multi_refdex:
+    if refdex:
         for document in documents:
-            document.rewrite_reference_links(multi_refdex)
+            document.rewrite_reference_links(refdex)
 
     ### output
 
     if options.output_refdex:
-        sys.stdout.write(json.dumps(convert_multi_refdex_to_single_refdex(multi_refdex), indent=4, sort_keys=True))
-
-    if options.output_multi_refdex:
-        sys.stdout.write(json.dumps(multi_refdex, indent=4, sort_keys=True))
+        if options.output_refdex_single_filename:
+            refdex = convert_refdex_to_single_filename_refdex(refdex)
+        sys.stdout.write(json.dumps(refdex, indent=4, sort_keys=True))
 
     if options.dump_entries:
         for document in documents:
