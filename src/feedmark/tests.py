@@ -202,7 +202,7 @@ class TestFeedmarkCommandLine(unittest.TestCase):
 
     def test_output_refdex_with_overlap(self):
         # Both of these files contain an entry called "Llamas: It's Time to Spot Them".
-        # The refdex is created pointing to the file that was mentioned last.
+        # The refdex is created with entries pointing to all files where the entry occurs.
         main(['eg/Recent Llama Sightings.md', 'eg/Referenced Llama Sightings.md', '--output-refdex'])
         data = json.loads(sys.stdout.getvalue())
         self.assertDictEqual(data, {
@@ -229,6 +229,7 @@ class TestFeedmarkCommandLine(unittest.TestCase):
 
     def test_output_refdex_with_overlap_forcing_single_filename(self):
         # Both of these files contain an entry called "Llamas: It's Time to Spot Them"
+        # The refdex is created pointing only to the file that was mentioned last.
         main(['eg/Recent Llama Sightings.md', 'eg/Referenced Llama Sightings.md', '--output-refdex', '--output-refdex-single-filename'])
         data = json.loads(sys.stdout.getvalue())
         self.assertDictEqual(data, {
