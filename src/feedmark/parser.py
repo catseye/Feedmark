@@ -22,6 +22,11 @@ def rewrite_reference_links(refdex, reference_links):
                 filename = quote(entry['filename'].encode('utf-8'))
                 anchor = quote(entry['anchor'].encode('utf-8'))
                 url = u'{}#{}'.format(filename, anchor)
+            elif 'filenames' in entry and 'anchor' in entry:
+                # pick the last one, for compatibility with single-refdex style
+                filename = quote(entry['filenames'][-1].encode('utf-8'))
+                anchor = quote(entry['anchor'].encode('utf-8'))
+                url = u'{}#{}'.format(filename, anchor)
             elif 'url' in entry:
                 url = entry['url']
             else:
@@ -244,7 +249,7 @@ class Parser(object):
         while self.is_blank_line():
             self.scan()
 
-        match = re.match(r'^\#\#\#\s+(.*?)\s*$', self.line)
+        match = re.match(r'^\#\#\#\s+(.*?)\s*(\#\#\#)?\s*$', self.line)
         if not match:
             raise ValueError('Expected section, found "{}"'.format(self.line))
 

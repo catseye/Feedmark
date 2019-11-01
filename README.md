@@ -1,7 +1,7 @@
 Feedmark
 ========
 
-*Version 0.9-2019.1015.  Subject to change in backwards-incompatible ways without notice.*
+*Version 0.10.  Subject to change in backwards-incompatible ways without notice.*
 
 **Feedmark** is a format for embedding structured data in Markdown files
 in a way which is both human-readable and machine-extractable.
@@ -109,19 +109,8 @@ See also
 Feedmark is a subset of Markdown, which is something it has in common
 with [Falderal][], however it has decidedly different goals.
 
-TODO
-----
-
-Research whether JSON Schema could be used for validation as well.
-
-"common" properties on document which all entries within inherit.
-
-Sub-entries.  Somehow.  For individual games in a series, implementations
-or variations on a programming language, etc.
-
-Allow trailing `###` on h3-level headings.
-
-Index creation from refdex, for permalinks.
+See [TODO.md](TODO.md) for planned features and [HISTORY.md](HISTORY.md)
+for a record of features added in past versions.
 
 [Falderal]: http://catseye.tc/node/Falderal
 [Chrysoberyl]: http://git.catseye.tc/Chrysoberyl/

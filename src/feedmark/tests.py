@@ -128,7 +128,7 @@ class TestFeedmarkCommandLine(unittest.TestCase):
              "<a href=\"https://daringfireball.net/projects/markdown/\">Markdown</a>\ncan be used.</p>\n"
              "<p>To <a href=\"https://en.wikipedia.org/wiki/Site\">site</a> them.</p>\n<p>Sight them, sigh.</p>"
         )
-        # note that property values are bare HTML: there is no surrounding <p></p> or other element
+        # note that property values are bare HTML fragments: there is no surrounding <p></p> or other element
         self.assertEqual(
             data['documents'][0]['properties']['hopper'],
             '<a href="https://en.wikipedia.org/wiki/Stephen_Hopper">Stephen</a>'
@@ -184,20 +184,67 @@ class TestFeedmarkCommandLine(unittest.TestCase):
         self.assertDictEqual(data, {
             "2 Llamas Spotted Near Mall": {
                 "anchor": "2-llamas-spotted-near-mall",
-                "filename": "eg/Recent Llama Sightings.md"
+                "filenames": ["eg/Recent Llama Sightings.md"],
             },
             "A Possible Llama Under the Bridge": {
                 "anchor": "a-possible-llama-under-the-bridge",
-                "filename": "eg/Recent Llama Sightings.md"
+                "filenames": ["eg/Recent Llama Sightings.md"],
             },
             "Llamas: It's Time to Spot Them": {
                 "anchor": "llamas-its-time-to-spot-them",
-                "filename": "eg/Recent Llama Sightings.md"
+                "filenames": ["eg/Recent Llama Sightings.md"],
             },
             "Maybe sighting the llama": {
                 "anchor": "maybe-sighting-the-llama",
-                "filename": "eg/Ancient Llama Sightings.md"
+                "filenames": ["eg/Ancient Llama Sightings.md"],
             }
+        })
+
+    def test_output_refdex_with_overlap(self):
+        # Both of these files contain an entry called "Llamas: It's Time to Spot Them".
+        # The refdex is created with entries pointing to all files where the entry occurs.
+        main(['eg/Recent Llama Sightings.md', 'eg/Referenced Llama Sightings.md', '--output-refdex'])
+        data = json.loads(sys.stdout.getvalue())
+        self.assertDictEqual(data, {
+            "2 Llamas Spotted Near Mall": {
+                "anchor": "2-llamas-spotted-near-mall",
+                "filenames": [
+                    "eg/Recent Llama Sightings.md",
+                ]
+            },
+            "A Possible Llama Under the Bridge": {
+                "anchor": "a-possible-llama-under-the-bridge",
+                "filenames": [
+                    "eg/Recent Llama Sightings.md",
+                ],
+            },
+            "Llamas: It's Time to Spot Them": {
+                "anchor": "llamas-its-time-to-spot-them",
+                "filenames": [
+                    "eg/Recent Llama Sightings.md",
+                    "eg/Referenced Llama Sightings.md"
+                ]
+            },
+        })
+
+    def test_output_refdex_with_overlap_forcing_single_filename(self):
+        # Both of these files contain an entry called "Llamas: It's Time to Spot Them"
+        # The refdex is created pointing only to the file that was mentioned last.
+        main(['eg/Recent Llama Sightings.md', 'eg/Referenced Llama Sightings.md', '--output-refdex', '--output-refdex-single-filename'])
+        data = json.loads(sys.stdout.getvalue())
+        self.assertDictEqual(data, {
+            "2 Llamas Spotted Near Mall": {
+                "anchor": "2-llamas-spotted-near-mall",
+                "filename": "eg/Recent Llama Sightings.md",
+            },
+            "A Possible Llama Under the Bridge": {
+                "anchor": "a-possible-llama-under-the-bridge",
+                "filename": "eg/Recent Llama Sightings.md",
+            },
+            "Llamas: It's Time to Spot Them": {
+                "anchor": "llamas-its-time-to-spot-them",
+                "filename": "eg/Referenced Llama Sightings.md",
+            },
         })
 
     def test_input_refdex_output_markdown(self):

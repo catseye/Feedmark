@@ -2,7 +2,9 @@ from argparse import ArgumentParser
 import json
 import sys
 
-from feedmark.loader import read_document_from, read_refdex_from
+from feedmark.loader import (
+    read_document_from, read_refdex_from, convert_refdex_to_single_filename_refdex,
+)
 from feedmark.utils import items
 
 
@@ -62,18 +64,22 @@ def main(args):
     argparser.add_argument('--input-refdexes', metavar='FILENAME', type=str,
         help='Load these JSON files as the reference-style links index before processing'
     )
+    argparser.add_argument('--input-refdex-filename-prefix', type=str, default=None,
+        help='After loading refdexes, prepend this to filename of each refdex'
+    )
     argparser.add_argument('--output-refdex', action='store_true',
         help='Construct reference-style links index from the entries and write it to stdout as JSON'
     )
-    argparser.add_argument('--input-refdex-filename-prefix', type=str, default=None,
-        help='After loading refdexes, prepend this to filename of each refdex'
+    argparser.add_argument('--output-refdex-single-filename', action='store_true',
+        help='When outputting a refdex, ensure that only entries with a single filename are '
+             'output, by stripping all but the last filename from multiple filenames entries.'
     )
 
     argparser.add_argument('--limit', metavar='COUNT', type=int, default=None,
         help='Process no more than this many entries when making an Atom or HTML feed'
     )
 
-    argparser.add_argument('--version', action='version', version="%(prog)s 0.9")
+    argparser.add_argument('--version', action='version', version="%(prog)s 0.10")
 
     options = argparser.parse_args(args)
 
@@ -84,6 +90,8 @@ def main(args):
     for filename in options.input_files:
         document = read_document_from(filename)
         documents.append(document)
+
+    ### input: load input refdexes
 
     input_refdexes = []
     if options.input_refdex:
@@ -113,10 +121,19 @@ def main(args):
     if options.output_refdex:
         for document in documents:
             for section in document.sections:
-                refdex[section.title] = {
-                    'filename': document.filename,
-                    'anchor': section.anchor
-                }
+                if section.title in refdex:
+                    entry = refdex[section.title]
+                    if entry['anchor'] != section.anchor:
+                        raise ValueError("Inconsistent anchors: {} in refex, {} in document".format(entry['anchor'], section.anchor))
+                    if 'filename' in entry:
+                        entry['filenames'] = []
+                        del entry['filename']
+                    entry['filenames'].append(document.filename)
+                else:
+                    refdex[section.title] = {
+                        'filenames': [document.filename],
+                        'anchor': section.anchor
+                    }
 
     ### processing: rewrite references phase
 
@@ -127,6 +144,8 @@ def main(args):
     ### output
 
     if options.output_refdex:
+        if options.output_refdex_single_filename:
+            refdex = convert_refdex_to_single_filename_refdex(refdex)
         sys.stdout.write(json.dumps(refdex, indent=4, sort_keys=True))
 
     if options.dump_entries:

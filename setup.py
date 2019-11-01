@@ -6,8 +6,8 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name='Feedmark',
-    version='0.9.2019.1015',
-    description='Definition of Feedmark, a curation-oriented subset of Markdown, and tools for processing it',
+    version='0.10',
+    description='Feedmark, a curation-oriented subset of Markdown, and tools for processing it',
     long_description=long_description,
     long_description_content_type="text/markdown",
     author='Chris Pressey',
@@ -19,7 +19,7 @@ setuptools.setup(
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Information Technology",
-        "License :: Public Domain",
+        "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
