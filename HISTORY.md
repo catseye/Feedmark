@@ -1,6 +1,11 @@
 History of Feedmark
 ===================
 
+0.11
+----
+
+*   Fixed a bug with `--rewrite-markdown` under Python 3.x.
+
 0.10
 ----
 

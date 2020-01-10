@@ -218,7 +218,7 @@ def main(args):
         for document in documents:
             s = feedmark_markdownize(document, schema=schema)
             with open(document.filename, 'w') as f:
-                f.write(s.encode('UTF-8'))
+                f.write(s)
 
     if options.output_html:
         from feedmark.formats.markdown import feedmark_htmlize
