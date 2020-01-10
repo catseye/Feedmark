@@ -42,6 +42,20 @@ class TestFeedmarkFileCreation(unittest.TestCase):
         )
         os.unlink('feed.xml')
 
+    def test_rewrite_markdown(self):
+        with open('foo.md', 'w') as f:
+            f.write("""# Document
+
+### Entry
+
+Have you heard, [2 Llamas Spotted Near Mall]()?
+
+[2 Llamas Spotted Near Mall]: TK
+""")
+        main(["foo.md", "--input-refdex={}/eg/refdex.json".format(self.prevdir), '--rewrite-markdown'])
+        self.assert_file_contains('foo.md', '[2 Llamas Spotted Near Mall]: eg/Recent%20Llama%20Sightings.md#2-llamas-spotted-near-mall')
+        os.unlink('foo.md')
+
 
 class TestFeedmarkCommandLine(unittest.TestCase):
 
