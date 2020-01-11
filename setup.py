@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name='Feedmark',
-    version='0.10',
+    version='0.11',
     description='Feedmark, a curation-oriented subset of Markdown, and tools for processing it',
     long_description=long_description,
     long_description_content_type="text/markdown",
