@@ -170,7 +170,10 @@ class Parser(object):
         return re.match(r'^\s*$', self.line)
 
     def is_image_line(self):
-        return re.match(r'^\!\[.*?\]\(.*?\)\s*$', self.line)
+        return (
+            re.match(r'^\!\[.*?\]\(.*?\)\s*$', self.line) or
+            re.match(r'^\[\!\[.*?\]\(.*?\)\]\(.*?\)\s*$', self.line)
+        )
 
     def is_property_line(self):
         return re.match(r'^\*\s+(.*?)\s*(\:|\@)\s*(.*?)\s*$', self.line)
@@ -267,7 +270,11 @@ class Parser(object):
         while self.is_blank_line() or self.is_image_line():
             if self.is_image_line():
                 match = re.match(r'^\!\[(.*?)\]\((.*?)\)\s*$', self.line)
-                images.append( (match.group(1), match.group(2),) )
+                if match:
+                    images.append( (match.group(1), match.group(2),) )
+                else:
+                    match = re.match(r'^\[\!\[(.*?)\]\((.*?)\)\]\((.*?)\)\s*$', self.line)
+                    images.append( (match.group(1), match.group(2), match.group(3),) )
             self.scan()
         return images
 
