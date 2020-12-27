@@ -16,7 +16,7 @@ Fusce sed varius diam. Mauris massa lorem, fermentum et faucibus id, luctus susc
 
 ### A Possible Llama Under the Bridge
 
-![photo of possible llama](https://static.catseye.tc/images/screenshots/Heronsis_hermnonicii.jpg)
+[![photo of possible llama](https://static.catseye.tc/images/screenshots/Heronsis_hermnonicii.jpg)](https://catseye.tc/article/Gewgaws.md)
 
 *   date: Dec 15 2016 23:59:59
 *   reporter: Gregor Samsa
