@@ -6,6 +6,8 @@
 
 ### Maybe sighting the llama
 
+![photo of possible llama](https://static.catseye.tc/images/screenshots/Kolakoski_Kurve.jpg)
+
 *   date: Jan 1 1984 12:00:00
 
 It was a possible llama sighting.

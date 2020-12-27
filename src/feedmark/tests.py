@@ -113,7 +113,12 @@ class TestFeedmarkCommandLine(unittest.TestCase):
         self.assertEqual(data['documents'][0]['sections'], [
             {
                 u'body': data['documents'][0]['sections'][0]['body'],
-                u'images': [],
+                u'images': [
+                    [
+                        u'photo of possible llama',
+                        u'https://static.catseye.tc/images/screenshots/Kolakoski_Kurve.jpg',
+                    ]
+                ],
                 u'properties': {u'date': u'Jan 1 1984 12:00:00'},
                 u'title': u'Maybe sighting the llama',
                 u'anchor': u'maybe-sighting-the-llama',

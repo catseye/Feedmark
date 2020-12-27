@@ -1,6 +1,11 @@
 History of Feedmark
 ===================
 
+0.12
+----
+
+*   Added test case for correct handling of image in entry.
+
 0.11
 ----
 
@@ -17,8 +22,8 @@ History of Feedmark
     and produce only `filename` entries on output.
 *   Parser now allows trailing `###` on h3-level section headers.
 
-0.9-2019.105
-------------
+0.9-2019.1015
+-------------
 
 *   Minor release to work out issues with `setup.py`.
 
