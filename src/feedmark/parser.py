@@ -271,10 +271,17 @@ class Parser(object):
             if self.is_image_line():
                 match = re.match(r'^\!\[(.*?)\]\((.*?)\)\s*$', self.line)
                 if match:
-                    images.append( (match.group(1), match.group(2),) )
+                    images.append({
+                        'description': match.group(1),
+                        'source': match.group(2),
+                    })
                 else:
                     match = re.match(r'^\[\!\[(.*?)\]\((.*?)\)\]\((.*?)\)\s*$', self.line)
-                    images.append( (match.group(1), match.group(2), match.group(3),) )
+                    images.append({
+                        'description': match.group(1),
+                        'source': match.group(2),
+                        'link': match.group(3),
+                    })
             self.scan()
         return images
 

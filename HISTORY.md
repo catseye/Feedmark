@@ -4,7 +4,8 @@ History of Feedmark
 0.12
 ----
 
-*   Added test case for correct handling of image in entry.
+*   Added support for hyperlinks on images on entries.
+*   Added test cases for correct handling of images on entries.
 
 0.11
 ----
