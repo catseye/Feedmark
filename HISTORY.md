@@ -6,6 +6,9 @@ History of Feedmark
 
 *   Added support for hyperlinks on images on entries.
 *   Added test cases for correct handling of images on entries.
+*   Format of entry images in output JSON has changed: each image
+    is now represented as a dictionary with two or three keys
+    rather than as a list with two elements.
 
 0.11
 ----
