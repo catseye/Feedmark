@@ -73,8 +73,15 @@ def feedmark_markdownize(document, schema=None):
         md += u'\n'
         md += u'### {}\n\n'.format(section.title)
         if section.images:
-            for name, url in section.images:
-                md += u'![{}]({})\n'.format(name, url)
+            for entry in section.images:
+                if 'link' in entry:
+                    md += u'[![{}]({})]({})\n'.format(
+                        entry['description'], entry['source'], entry['link'],
+                    )
+                else:
+                    md += u'![{}]({})\n'.format(
+                        entry['description'], entry['source'],
+                    )
             md += u'\n'
         md += markdownize_properties(section.properties, property_priority_order)
         md += section.body

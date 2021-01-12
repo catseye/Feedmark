@@ -113,13 +113,33 @@ class TestFeedmarkCommandLine(unittest.TestCase):
         self.assertEqual(data['documents'][0]['sections'], [
             {
                 u'body': data['documents'][0]['sections'][0]['body'],
-                u'images': [],
+                u'images': [
+                    {
+                        u'description': u'photo of possible llama',
+                        u'source': u'https://static.catseye.tc/images/screenshots/Kolakoski_Kurve.jpg',
+                    }
+                ],
                 u'properties': {u'date': u'Jan 1 1984 12:00:00'},
                 u'title': u'Maybe sighting the llama',
                 u'anchor': u'maybe-sighting-the-llama',
             }
         ])
         self.assertIn(u'It was a possible llama sighting.\n\n', data['documents'][0]['sections'][0]['body'])
+
+    def test_output_json_with_multiple_images_and_linked_images(self):
+        main(['eg/Recent Llama Sightings.md', '--output-json'])
+        data = json.loads(sys.stdout.getvalue())
+        self.assertEqual(data['documents'][0]['sections'][1]['images'], [
+            {
+                u'description': u'photo of possible llama',
+                u'source': u'https://static.catseye.tc/images/screenshots/Heronsis_hermnonicii.jpg',
+                u'link': u'https://catseye.tc/article/Gewgaws.md',
+            },
+            {
+                u'description': u'another possible photo',
+                u'source': u'https://static.catseye.tc/images/screenshots/A_Non-Random_Walk.jpg',
+            },
+        ])
 
     def test_output_htmlized_json(self):
         main(['eg/Referenced Llama Sightings.md', '--output-json', '--htmlized-json'])
