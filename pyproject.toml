@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "Feedmark"
+version = "0.13"
+authors = [
+    { name="Chris Pressey", email="packages@catseye.tc" },
+]
+urls = { website="https://catseye.tc/node/Feedmark" }
+description = "Feedmark: a curation-oriented subset of Markdown, and tools for processing it"
+readme = "README.md"
+license = { file="LICENSE" }
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 2.7",
+    "Programming Language :: Python :: 3",
+]
+requires-python = ">=2.7, >=3.5"
+dependencies = [
+    "atomize==0.2.0",
+    "Markdown==2.6.8",
+    "beautifulsoup4==4.6.0",
+]
+
+[project.scripts]
+feedmark = "feedmark.main:sys_main"
