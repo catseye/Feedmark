@@ -8,6 +8,10 @@ from feedmark.loader import (
 from feedmark.utils import items
 
 
+def sys_main():
+    return main(sys.argv[1:])
+
+
 def main(args):
     argparser = ArgumentParser()
 

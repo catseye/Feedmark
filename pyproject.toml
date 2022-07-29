@@ -26,4 +26,4 @@ dependencies = [
 ]
 
 [project.scripts]
-feedmark = "feedmark.main:main"
+feedmark = "feedmark.main:sys_main"
