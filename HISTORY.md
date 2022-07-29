@@ -1,6 +1,14 @@
 History of Feedmark
 ===================
 
+0.13
+----
+
+*   The default interpreter for the `feedmark` script is now
+    `python3`.
+*   The test harness runs tests under Python 2, or Python 3,
+    or both, depending on what's available.
+
 0.12
 ----
 

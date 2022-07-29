@@ -1,7 +1,7 @@
 Feedmark
 ========
 
-*Version 0.12.  Subject to change in backwards-incompatible ways without notice.*
+*Version 0.13.  Subject to change in backwards-incompatible ways without notice.*
 
 **Feedmark** is a format for embedding structured data in Markdown files
 in a way which is both human-readable and machine-extractable.
@@ -39,7 +39,7 @@ on your executable search path, and run it as `feedmark` anywhere.
 
 Or you can install it using `pip`:
 
-    pip install Feedmark==0.12
+    pip install Feedmark==0.13
 
 (Depending on your needs, you may wish to establish a virtual environment
 first.  How to do this is outside the scope of this document.)
@@ -64,8 +64,8 @@ The original use case of this tool was to generate an Atom (née RSS)
 feed of entries in a document:
 
     feedmark "eg/Recent Llama Sightings.md" --output-atom=feed.xml
-    python -m SimpleHTTPServer 7000 &
-    python -m webbrowser http://localhost:7000/feed.xml
+    python3 -m http.server 7000 &
+    python3 -m webbrowser http://localhost:7000/feed.xml
 
 It can now also output entries as JSON, indexed by entry, or by
 property, or by publication date:
@@ -112,6 +112,6 @@ with [Falderal][], however it has decidedly different goals.
 See [TODO.md](TODO.md) for planned features and [HISTORY.md](HISTORY.md)
 for a record of features added in past versions.
 
-[Falderal]: http://catseye.tc/node/Falderal
-[Chrysoberyl]: http://git.catseye.tc/Chrysoberyl/
-[The Dossier]: http://git.catseye.tc/The-Dossier/
+[Falderal]: https://catseye.tc/node/Falderal
+[Chrysoberyl]: https://git.catseye.tc/Chrysoberyl/
+[The Dossier]: https://git.catseye.tc/The-Dossier/
