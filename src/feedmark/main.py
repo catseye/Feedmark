@@ -113,7 +113,7 @@ def main(args):
         from feedmark.checkers import Schema
         schema_document = read_document_from(options.check_against_schema)
         schema = Schema(schema_document)
-        results = schema.check_documents([document])
+        results = schema.check_documents(documents)
         if results:
             sys.stdout.write(json.dumps(results, indent=4, sort_keys=True))
             sys.exit(1)

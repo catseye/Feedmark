@@ -70,13 +70,13 @@ class TestFeedmarkCommandLine(unittest.TestCase):
         super(TestFeedmarkCommandLine, self).tearDown()
 
     def test_schema(self):
-        main(["eg/Recent Llama Sightings.md", "eg/Ancient Llama Sightings.md", '--check-against=eg/schema/Llama sighting.md'])
+        main(["eg/Recent Llama Sightings.md", "eg/Ancient Llama Sightings.md", '--check-against-schema=eg/schema/Llama sighting.md'])
         output = sys.stdout.getvalue()
         self.assertEqual(output, '')
 
     def test_schema_failure(self):
         with self.assertRaises(SystemExit):
-            main(["eg/Ill-formed Llama Sightings.md", '--check-against=eg/schema/Llama sighting.md'])
+            main(["eg/Ill-formed Llama Sightings.md", "eg/Recent Llama Sightings.md", '--check-against-schema=eg/schema/Llama sighting.md'])
         data = json.loads(sys.stdout.getvalue())
         self.assertEqual(data, [
             {
