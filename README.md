@@ -1,7 +1,7 @@
 Feedmark
 ========
 
-*Version 0.13.  Subject to change in backwards-incompatible ways without notice.*
+*Version 0.14.  Subject to change in backwards-incompatible ways without notice.*
 
 **Feedmark** is a format for embedding structured data in Markdown files
 in a way which is both human-readable and machine-extractable.
