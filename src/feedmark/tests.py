@@ -42,7 +42,7 @@ class TestFeedmarkFileCreation(unittest.TestCase):
         )
         os.unlink('feed.xml')
 
-    def test_rewrite_markdown(self):
+    def test_rewrite_markdown_input_refdex(self):
         with open('foo.md', 'w') as f:
             f.write("""# Document
 
@@ -54,6 +54,20 @@ Have you heard, [2 Llamas Spotted Near Mall]()?
 """)
         main(["foo.md", "--input-refdex={}/eg/refdex.json".format(self.prevdir), '--rewrite-markdown'])
         self.assert_file_contains('foo.md', '[2 Llamas Spotted Near Mall]: eg/Recent%20Llama%20Sightings.md#2-llamas-spotted-near-mall')
+        os.unlink('foo.md')
+
+    def test_rewrite_markdown_internal(self):
+        with open('foo.md', 'w') as f:
+            f.write("""# Document
+
+### Bubble & Squeak
+
+Have you heard, [Bubble & Squeak]()?
+
+[Bubble & Squeak]: TK
+""")
+        main(["foo.md", '--output-refdex', '--rewrite-markdown'])
+        self.assert_file_contains('foo.md', '[Bubble & Squeak]: foo.md#bubble--squeak')
         os.unlink('foo.md')
 
 
