@@ -1,6 +1,14 @@
 History of Feedmark
 ===================
 
+0.14
+----
+
+*   Generated anchors are now compatible with those on GitHub
+    (multiple spaces are not coalesced into a single hyphen.)
+*   Fixed bug with schema checking where, if multiple documents
+    were given on command line, not all documents were checked.
+
 0.13
 ----
 
