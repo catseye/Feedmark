@@ -1,12 +1,13 @@
 Feedmark
 ========
 
-*Version 0.13.  Subject to change in backwards-incompatible ways without notice.*
+*Version 0.14.  Subject to change in backwards-incompatible ways without notice.*
 
 **Feedmark** is a format for embedding structured data in Markdown files
 in a way which is both human-readable and machine-extractable.
 The structured data is intended to be "curational" in nature.
-Articles in [Chrysoberyl][] and [The Dossier][] are written in Feedmark.
+Articles in [Chrysoberyl][], [Some Games of Note][], and other collections
+of Cat's Eye Technologies' are written in Feedmark.
 
 Informally, the format says that every `h3`-level heading in the
 Markdown file gives the title of an entity, and may be followed
@@ -39,7 +40,7 @@ on your executable search path, and run it as `feedmark` anywhere.
 
 Or you can install it using `pip`:
 
-    pip install Feedmark==0.13
+    pip install Feedmark==0.14
 
 (Depending on your needs, you may wish to establish a virtual environment
 first.  How to do this is outside the scope of this document.)
@@ -114,4 +115,4 @@ for a record of features added in past versions.
 
 [Falderal]: https://catseye.tc/node/Falderal
 [Chrysoberyl]: https://git.catseye.tc/Chrysoberyl/
-[The Dossier]: https://git.catseye.tc/The-Dossier/
+[Some Games of Note]: https://github.com/cpressey/Some-Games-of-Note#readme

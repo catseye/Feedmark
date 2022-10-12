@@ -121,9 +121,11 @@ class Section(object):
 
     @property
     def anchor(self):
-        from markdown.extensions.toc import slugify
-
-        return slugify(self.title, '-')
+        return re.sub(
+            r'[-\s]',
+            '-',
+            re.sub(r'[^\w\s-]', '', self.title).strip().lower()
+        )
 
     def to_json_data(self, **kwargs):
 

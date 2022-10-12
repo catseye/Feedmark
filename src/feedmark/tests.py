@@ -42,7 +42,7 @@ class TestFeedmarkFileCreation(unittest.TestCase):
         )
         os.unlink('feed.xml')
 
-    def test_rewrite_markdown(self):
+    def test_rewrite_markdown_input_refdex(self):
         with open('foo.md', 'w') as f:
             f.write("""# Document
 
@@ -54,6 +54,20 @@ Have you heard, [2 Llamas Spotted Near Mall]()?
 """)
         main(["foo.md", "--input-refdex={}/eg/refdex.json".format(self.prevdir), '--rewrite-markdown'])
         self.assert_file_contains('foo.md', '[2 Llamas Spotted Near Mall]: eg/Recent%20Llama%20Sightings.md#2-llamas-spotted-near-mall')
+        os.unlink('foo.md')
+
+    def test_rewrite_markdown_internal(self):
+        with open('foo.md', 'w') as f:
+            f.write("""# Document
+
+### Bubble & Squeak
+
+Have you heard, [Bubble & Squeak]()?
+
+[Bubble & Squeak]: TK
+""")
+        main(["foo.md", '--output-refdex', '--rewrite-markdown'])
+        self.assert_file_contains('foo.md', '[Bubble & Squeak]: foo.md#bubble--squeak')
         os.unlink('foo.md')
 
 
@@ -70,13 +84,13 @@ class TestFeedmarkCommandLine(unittest.TestCase):
         super(TestFeedmarkCommandLine, self).tearDown()
 
     def test_schema(self):
-        main(["eg/Recent Llama Sightings.md", "eg/Ancient Llama Sightings.md", '--check-against=eg/schema/Llama sighting.md'])
+        main(["eg/Recent Llama Sightings.md", "eg/Ancient Llama Sightings.md", '--check-against-schema=eg/schema/Llama sighting.md'])
         output = sys.stdout.getvalue()
         self.assertEqual(output, '')
 
     def test_schema_failure(self):
         with self.assertRaises(SystemExit):
-            main(["eg/Ill-formed Llama Sightings.md", '--check-against=eg/schema/Llama sighting.md'])
+            main(["eg/Ill-formed Llama Sightings.md", "eg/Recent Llama Sightings.md", '--check-against-schema=eg/schema/Llama sighting.md'])
         data = json.loads(sys.stdout.getvalue())
         self.assertEqual(data, [
             {
