@@ -2,7 +2,7 @@
 
 *   author: Alfred J. Prufrock
 *   url: http://example.com/ill_llama.xml
-*   link-target-url: https://github.com/catseye/Feedmark/blob/master/eg/Ill-formed%20Llama%20Sightings.md
+*   link-target-url: https://codeberg.org/catseye/Feedmark/src/branch/master/eg/Ill-formed%20Llama%20Sightings.md
 
 ### Definite llama sighting with no date
 

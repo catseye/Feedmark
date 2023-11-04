@@ -2,7 +2,7 @@
 
 *   author: Alfred J. Prufrock
 *   url: http://example.com/refllama.xml
-*   link-target-url: https://github.com/catseye/Feedmark/blob/master/eg/Referenced%20Llama%20Sightings.md
+*   link-target-url: https://codeberg.org/catseye/Feedmark/src/branch/master/eg/Referenced%20Llama%20Sightings.md
 *   hopper: [Stephen](https://en.wikipedia.org/wiki/Stephen_Hopper)
 *   spotted @ [the mall][]
 *   spotted @ [the beach](beach.html)

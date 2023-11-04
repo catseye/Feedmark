@@ -115,4 +115,4 @@ for a record of features added in past versions.
 
 [Falderal]: https://catseye.tc/node/Falderal
 [Chrysoberyl]: https://git.catseye.tc/Chrysoberyl/
-[Some Games of Note]: https://github.com/cpressey/Some-Games-of-Note#readme
+[Some Games of Note]: https://catseye.tc/node/Some%20Games%20of%20Note
