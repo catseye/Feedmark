@@ -21,7 +21,7 @@ classifiers = [
 requires-python = ">=2.7, >=3.5"
 dependencies = [
     "atomize==0.2.0",
-    "Markdown==2.6.8",
+    "Markdown==3.8.1",
     "beautifulsoup4==4.6.0",
 ]
 
